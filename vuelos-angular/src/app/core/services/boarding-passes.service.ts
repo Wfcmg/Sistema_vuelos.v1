@@ -1,8 +1,8 @@
-﻿import { Injectable, inject } from '@angular/core';
+﻿import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { ApiSuccess, BoardingPass } from '../models/domain';
-
-const BASE = 'http://localhost:3000/api/v1';
+const BASE = environment.apiUrl;
 
 export interface CreateBoardingPassPayload {
   passengerId: string; segmentId: string; boardingCode: string;
@@ -26,3 +26,5 @@ export class BoardingPassesService {
     return this.http.get<ApiSuccess<BoardingPass>>(`${BASE}/boarding-passes/${id}`);
   }
 }
+
+

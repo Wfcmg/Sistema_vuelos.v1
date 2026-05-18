@@ -1,8 +1,8 @@
-﻿import { Injectable, inject } from '@angular/core';
+﻿import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { ApiSuccess, Payment } from '../models/domain';
-
-const BASE = 'http://localhost:3000/api/v1';
+const BASE = environment.apiUrl;
 
 export interface CreatePaymentPayload {
   reservationId: string; amount: number; provider: string; transactionId: string; status?: string;
@@ -28,3 +28,5 @@ export class PaymentsService {
     return this.http.get<ApiSuccess<Payment[]>>(`${BASE}/payments`);
   }
 }
+
+

@@ -1,8 +1,8 @@
-﻿import { Injectable, inject } from '@angular/core';
+﻿import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import type { ApiSuccess, PassengerService } from '../models/domain';
-
-const BASE = 'http://localhost:3000/api/v1';
+const BASE = environment.apiUrl;
 
 export interface CreatePassengerServicePayload {
   passengerId: string; serviceConfigId: string;
@@ -25,3 +25,5 @@ export class PassengerServicesService {
     return this.http.delete<ApiSuccess<unknown>>(`${BASE}/passenger-services/${id}`);
   }
 }
+
+

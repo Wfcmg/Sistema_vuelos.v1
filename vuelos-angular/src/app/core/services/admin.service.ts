@@ -1,10 +1,10 @@
-﻿import { Injectable, inject } from '@angular/core';
+﻿import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthStore } from '../store/auth.store';
-
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = environment.apiUrl;
 
 function extractData(res: any): any[] {
   if (res?.data?.data) return res.data.data;
@@ -165,3 +165,5 @@ export class AdminService {
   updateReservationPassenger(id: string, b: unknown)          { return this.patch(`/admin/reservation-passengers/${id}`, b); }
   deleteReservationPassenger(id: string)                      { return this.del(`/admin/reservation-passengers/${id}`); }
 }
+
+

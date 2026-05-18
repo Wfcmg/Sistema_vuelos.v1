@@ -1,10 +1,10 @@
-﻿import { Injectable, inject } from '@angular/core';
+﻿import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { AuthStore } from '../store/auth.store';
 import type { ApiSuccess, AuthResponse, LoginCredentials, RegisterData, User } from '../models/domain';
-
-const BASE = 'http://localhost:3000/api/v1';
+const BASE = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -27,3 +27,5 @@ export class AuthService {
     return this.http.get<ApiSuccess<User>>(`${BASE}/auth/me`);
   }
 }
+
+
