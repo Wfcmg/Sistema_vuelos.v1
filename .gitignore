@@ -27,3 +27,5 @@ Thumbs.db
 
 # Config local de Claude
 .claude/
+
+api-gateway/backups-render/
