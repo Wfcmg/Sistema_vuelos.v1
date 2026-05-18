@@ -1,8 +1,12 @@
 ﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import type { ApiSuccess, Flight, FlightSearchParams } from '../models/domain';
 
-const BASE = 'http://localhost:3000/api/v1';
+// API pública de Booking publicada en Render.
+// Base final:
+// https://vuelos-api-gateway-wc.onrender.com/api/v1/william-carrion-booking
+const BOOKING_API_URL = `${environment.apiUrl}/william-carrion-booking`;
 
 function cleanAirportCode(value: string | null | undefined): string {
   const raw = (value ?? '').trim().toUpperCase();
@@ -18,7 +22,6 @@ function cleanDate(value: string | null | undefined): string {
   // Si llega ISO completo, se recorta a los primeros 10 caracteres.
   return (value ?? '').trim().slice(0, 10);
 }
-
 
 @Injectable({ providedIn: 'root' })
 export class FlightsService {
@@ -37,27 +40,37 @@ export class FlightsService {
 
     if (params.class) httpParams = httpParams.set('class', params.class);
 
-    return this.http.get<ApiSuccess<Flight[]>>(`${BASE}/flights/search`, { params: httpParams });
+    return this.http.get<ApiSuccess<Flight[]>>(`${BOOKING_API_URL}/flights/search`, {
+      params: httpParams
+    });
   }
 
   getAll() {
-    return this.http.get<ApiSuccess<Flight[]>>(`${BASE}/flights`);
+    // La API pública Booking no expone listado general /flights.
+    // Para evitar llamadas a localhost o rutas internas, se usa una búsqueda demo pública.
+    const params: FlightSearchParams = {
+      origin: 'UIO',
+      destination: 'SCL',
+      date: '2026-07-15',
+      passengers: 1
+    };
+
+    return this.search(params);
   }
 
   getById(id: string) {
-    return this.http.get<ApiSuccess<Flight>>(`${BASE}/flights/${id}`);
+    return this.http.get<ApiSuccess<Flight>>(`${BOOKING_API_URL}/flights/${id}`);
   }
 
   create(body: Partial<Flight>) {
-    return this.http.post<ApiSuccess<Flight>>(`${BASE}/flights`, body);
+    throw new Error('La API pública de Booking no permite crear vuelos desde el frontend público.');
   }
 
   update(id: string, body: Partial<Flight>) {
-    return this.http.put<ApiSuccess<Flight>>(`${BASE}/flights/${id}`, body);
+    throw new Error('La API pública de Booking no permite actualizar vuelos desde el frontend público.');
   }
 
   remove(id: string) {
-    return this.http.delete<ApiSuccess<unknown>>(`${BASE}/flights/${id}`);
+    throw new Error('La API pública de Booking no permite eliminar vuelos desde el frontend público.');
   }
 }
-

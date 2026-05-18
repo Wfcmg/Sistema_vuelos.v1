@@ -4,8 +4,10 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import type { Airport, ApiSuccess } from '../models/domain';
 
-const API_URL =
-  (environment as { apiUrl?: string }).apiUrl ?? 'http://localhost:3000/api/v1';
+// API pública de Booking publicada en Render.
+// Base final:
+// https://vuelos-api-gateway-wc.onrender.com/api/v1/william-carrion-booking
+const BOOKING_API_URL = `${environment.apiUrl}/william-carrion-booking`;
 
 function extractData<T>(res: any): T[] {
   if (Array.isArray(res)) return res;
@@ -19,13 +21,24 @@ export class AirportsService {
 
   getAll() {
     return this.http
-      .get<ApiSuccess<Airport[]> | Airport[]>(`${API_URL}/airports`)
+      .get<ApiSuccess<Airport[]> | Airport[]>(`${BOOKING_API_URL}/airports`)
       .pipe(map(res => extractData<Airport>(res)));
   }
 
   search(query: string) {
-    return this.http
-      .get<ApiSuccess<Airport[]> | Airport[]>(`${API_URL}/airports/search`, { params: { q: query } })
-      .pipe(map(res => extractData<Airport>(res)));
+    const q = (query ?? '').trim().toLowerCase();
+
+    // La API pública Booking por ahora no tiene /airports/search,
+    // así que se consulta /airports y se filtra en Angular.
+    return this.getAll().pipe(
+      map(airports =>
+        airports.filter((airport: any) =>
+          String(airport.iataCode ?? '').toLowerCase().includes(q) ||
+          String(airport.name ?? '').toLowerCase().includes(q) ||
+          String(airport.city ?? '').toLowerCase().includes(q) ||
+          String(airport.country ?? '').toLowerCase().includes(q)
+        )
+      )
+    );
   }
 }
