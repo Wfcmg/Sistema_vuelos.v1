@@ -1,0 +1,308 @@
+﻿openapi: 3.0.3
+info:
+  title: William Carrion Booking API
+  version: 1.0.0
+  description: API pública exclusiva para integración con Booking. Estas rutas son públicas, no requieren autenticación y son distintas a las APIs internas del sistema.
+
+servers:
+  - url: http://localhost:3000/api/v1/william-carrion-booking
+    description: Servidor local mediante API Gateway
+
+security: []
+
+tags:
+  - name: Booking Public
+    description: Endpoints públicos exclusivos para Booking
+
+paths:
+  /:
+    get:
+      tags:
+        - Booking Public
+      summary: Estado general de la API pública Booking
+      description: Retorna información básica de la API pública exclusiva para Booking.
+      responses:
+        '200':
+          description: API Booking activa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingHealthResponse'
+
+  /airports:
+    get:
+      tags:
+        - Booking Public
+      summary: Listar aeropuertos disponibles
+      description: Retorna los aeropuertos disponibles para que Booking pueda consultar rutas.
+      responses:
+        '200':
+          description: Lista de aeropuertos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportsResponse'
+
+  /flights/search:
+    get:
+      tags:
+        - Booking Public
+      summary: Buscar vuelos disponibles
+      description: Permite buscar vuelos por origen, destino, fecha y número de pasajeros.
+      parameters:
+        - name: origin
+          in: query
+          required: true
+          schema:
+            type: string
+            example: UIO
+        - name: destination
+          in: query
+          required: true
+          schema:
+            type: string
+            example: SCL
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            example: '2026-07-15'
+        - name: passengers
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Lista de vuelos encontrados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightsSearchResponse'
+
+  /flights/{flightId}:
+    get:
+      tags:
+        - Booking Public
+      summary: Obtener detalle de un vuelo
+      description: Retorna el detalle completo de un vuelo específico.
+      parameters:
+        - name: flightId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: flight-uio-lim-scl-001
+      responses:
+        '200':
+          description: Detalle del vuelo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightDetailResponse'
+
+components:
+  schemas:
+    BookingHealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        owner:
+          type: string
+          example: William Carrion
+        project:
+          type: string
+          example: booking
+        route:
+          type: string
+          example: /api/v1/William-Carrion-Booking
+        visibility:
+          type: string
+          example: public
+        auth:
+          type: string
+          example: none
+        gateway:
+          type: string
+          example: api-gateway
+        status:
+          type: string
+          example: online
+        version:
+          type: string
+          example: 2.0.0
+
+    Airport:
+      type: object
+      properties:
+        id:
+          type: string
+          example: apt-uio
+        iataCode:
+          type: string
+          example: UIO
+        name:
+          type: string
+          example: Aeropuerto Internacional Mariscal Sucre
+        city:
+          type: string
+          example: Quito
+        country:
+          type: string
+          example: Ecuador
+        timezone:
+          type: string
+          example: America/Guayaquil
+
+    AirportsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        owner:
+          type: string
+          example: William Carrion
+        api:
+          type: string
+          example: William Carrion Booking API
+        version:
+          type: string
+          example: v1
+        module:
+          type: string
+          example: booking
+        visibility:
+          type: string
+          example: public
+        auth:
+          type: string
+          example: none
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Airport'
+
+    FlightClass:
+      type: object
+      properties:
+        flightClassId:
+          type: string
+          example: fc-economy-001
+        cabinClass:
+          type: string
+          example: ECONOMY
+        availableSeats:
+          type: integer
+          example: 118
+        basePrice:
+          type: number
+          example: 250
+
+    FlightSummary:
+      type: object
+      properties:
+        flightId:
+          type: string
+          example: flight-uio-lim-scl-001
+        flightNumber:
+          type: string
+          example: AV100-1
+        origin:
+          type: string
+          example: UIO
+        destination:
+          type: string
+          example: SCL
+        departureDate:
+          type: string
+          example: '2026-07-15T10:00:00.000Z'
+        departureDateTime:
+          type: string
+          example: '2026-07-15T10:00:00.000Z'
+        arrivalDateTime:
+          type: string
+          example: '2026-07-15T17:00:00.000Z'
+        status:
+          type: string
+          example: SCHEDULED
+        duration:
+          type: integer
+          example: 420
+        stops:
+          type: integer
+          example: 1
+        lowestPrice:
+          type: number
+          example: 250
+        airline:
+          type: string
+          example: Avianca Demo
+        aircraft:
+          type: string
+          example: Airbus A320 Demo
+        classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightClass'
+
+    FlightsSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        owner:
+          type: string
+          example: William Carrion
+        api:
+          type: string
+          example: William Carrion Booking API
+        version:
+          type: string
+          example: v1
+        module:
+          type: string
+          example: booking
+        visibility:
+          type: string
+          example: public
+        auth:
+          type: string
+          example: none
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightSummary'
+
+    FlightDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        owner:
+          type: string
+          example: William Carrion
+        api:
+          type: string
+          example: William Carrion Booking API
+        version:
+          type: string
+          example: v1
+        module:
+          type: string
+          example: booking
+        visibility:
+          type: string
+          example: public
+        auth:
+          type: string
+          example: none
+        data:
+          type: object
+

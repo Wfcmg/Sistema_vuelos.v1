@@ -1,0 +1,198 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../prisma-client-catalog"
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CATALOG_DATABASE_URL")
+  schemas  = ["public", "catalog"]
+}
+
+enum FlightStatus {
+  SCHEDULED
+  DELAYED
+  CANCELLED
+  COMPLETED
+
+  @@schema("public")
+}
+
+enum CabinClass {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST
+
+  @@schema("public")
+}
+
+model Country {
+  id           String  @id @default(cuid())
+  name         String  @unique
+  isoCode      String  @unique @map("iso_code")
+  phoneCode    String? @map("phone_code")
+  currencyCode String? @map("currency_code")
+
+  cities   City[]
+  airlines Airline[]
+
+  @@map("countries")
+  @@schema("catalog")
+}
+
+model City {
+  id        String  @id @default(cuid())
+  name      String
+  countryId String  @map("country_id")
+  iataCode  String? @unique @map("iata_code")
+
+  country  Country   @relation(fields: [countryId], references: [id])
+  airports Airport[]
+
+  @@map("cities")
+  @@schema("catalog")
+}
+
+model Airport {
+  id       String @id @default(cuid())
+  iataCode String @unique @map("iata_code")
+  name     String
+  cityId   String @map("city_id")
+  timezone String
+
+  city                City             @relation(fields: [cityId], references: [id])
+  originSegments      Segment[]        @relation("OriginAirport")
+  destinationSegments Segment[]        @relation("DestinationAirport")
+  airlineAirports     AirlineAirport[]
+
+  @@map("airports")
+  @@schema("catalog")
+}
+
+model Airline {
+  id        String  @id @default(cuid())
+  iataCode  String  @unique @map("iata_code")
+  name      String
+  logoUrl   String? @map("logo_url")
+  countryId String  @map("country_id")
+
+  country         Country                @relation(fields: [countryId], references: [id])
+  segments        Segment[]
+  aircrafts       Aircraft[]
+  serviceConfigs  AirlineServiceConfig[]
+  airlineAirports AirlineAirport[]
+
+  @@map("airlines")
+  @@schema("catalog")
+}
+
+model Aircraft {
+  id           String  @id @default(cuid())
+  airlineId    String  @map("airline_id")
+  modelName    String  @map("model_name")
+  registration String  @unique
+  hasWifi      Boolean @default(false) @map("has_wifi")
+  hasUsb       Boolean @default(false) @map("has_usb")
+
+  airline  Airline   @relation(fields: [airlineId], references: [id])
+  segments Segment[]
+
+  @@map("aircrafts")
+  @@schema("catalog")
+}
+
+model AirlineAirport {
+  airlineId String @map("airline_id")
+  airportId String @map("airport_id")
+
+  airline Airline @relation(fields: [airlineId], references: [id])
+  airport Airport @relation(fields: [airportId], references: [id])
+
+  @@id([airlineId, airportId])
+  @@map("airline_airports")
+  @@schema("catalog")
+}
+
+model Flight {
+  id                     String       @id @default(cuid())
+  originAirportIata      String       @map("origin_airport_iata")
+  destinationAirportIata String       @map("destination_airport_iata")
+  departureDate          DateTime     @map("departure_date")
+  status                 FlightStatus @default(SCHEDULED)
+
+  segments      Segment[]
+  flightClasses FlightClass[]
+
+  @@index([departureDate, originAirportIata, destinationAirportIata])
+  @@map("flights")
+  @@schema("catalog")
+}
+
+model Segment {
+  id                   String   @id @default(cuid())
+  segmentNumber        String   @map("segment_number")
+  originAirportId      String   @map("origin_airport_id")
+  destinationAirportId String   @map("destination_airport_id")
+  departureDateTime    DateTime @map("departure_datetime")
+  arrivalDateTime      DateTime @map("arrival_datetime")
+  airlineId            String   @map("airline_id")
+  aircraftId           String?  @map("aircraft_id")
+  estimatedDuration    Int      @map("estimated_duration")
+  flightId             String?  @map("flight_id")
+
+  flight             Flight?   @relation(fields: [flightId], references: [id])
+  originAirport      Airport   @relation("OriginAirport", fields: [originAirportId], references: [id])
+  destinationAirport Airport   @relation("DestinationAirport", fields: [destinationAirportId], references: [id])
+  airline            Airline   @relation(fields: [airlineId], references: [id])
+  aircraft           Aircraft? @relation(fields: [aircraftId], references: [id])
+
+  @@map("segments")
+  @@schema("catalog")
+}
+
+model FlightClass {
+  id             String     @id @default(cuid())
+  flightId       String     @map("flight_id")
+  cabinClass     CabinClass @map("cabin_class")
+  availableSeats Int        @map("available_seats")
+  basePrice      Decimal    @map("base_price") @db.Decimal(10, 2)
+
+  flight Flight @relation(fields: [flightId], references: [id])
+
+  @@unique([flightId, cabinClass])
+  @@map("flight_classes")
+  @@schema("catalog")
+}
+
+model ServiceCatalog {
+  id          String  @id @default(cuid())
+  name        String
+  code        String  @unique
+  category    String
+  description String?
+
+  airlineConfigs AirlineServiceConfig[]
+
+  @@map("service_catalog")
+  @@schema("catalog")
+}
+
+model AirlineServiceConfig {
+  id              String  @id @default(cuid())
+  serviceId       String  @map("service_id")
+  airlineId       String  @map("airline_id")
+  originAirportId String? @map("origin_airport_id")
+  destAirportId   String? @map("dest_airport_id")
+
+  price    Decimal @db.Decimal(10, 2)
+  currency String  @default("USD")
+
+  service ServiceCatalog @relation(fields: [serviceId], references: [id])
+  airline Airline        @relation(fields: [airlineId], references: [id])
+
+  @@map("airline_service_configs")
+  @@schema("catalog")
+}

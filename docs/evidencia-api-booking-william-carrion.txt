@@ -1,0 +1,41 @@
+﻿ENTREGA API BOOKING - WILLIAM CARRION
+
+Se separaron las APIs internas del sistema y las APIs públicas exclusivas para Booking.
+
+API interna:
+- Se mantiene bajo /api/v1
+- Conserva JWT
+- Ejemplo probado: /api/v1/auth/me respondió 401 sin token
+
+API pública Booking:
+- Base URL: http://localhost:3000/api/v1/william-carrion-booking
+- No requiere autenticación
+- Responde con auth: none
+- Responde con visibility: public
+
+Rutas públicas creadas para Booking:
+GET /api/v1/william-carrion-booking
+GET /api/v1/william-carrion-booking/airports
+GET /api/v1/william-carrion-booking/flights/search
+GET /api/v1/william-carrion-booking/flights/{flightId}
+
+Pruebas realizadas:
+- Ruta Booking principal: 200 OK
+- Ruta vieja /api/v1/William-Carrion/vuelos: 404
+- API interna /api/v1/auth/me sin token: 401
+- Airports Booking: success true, auth none
+- Flights search Booking: success true, auth none
+- Flight detail Booking: success true, auth none
+
+Archivo YAML generado:
+docs/william-carrion-booking-api.yaml
+
+Validación YAML:
+- security: []
+- No contiene bearer
+- No contiene Authorization
+- No contiene securitySchemes
+- Solo contiene rutas públicas de Booking
+
+Estado:
+ENTREGA LISTA
