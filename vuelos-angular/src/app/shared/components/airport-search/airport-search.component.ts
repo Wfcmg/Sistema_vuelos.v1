@@ -71,34 +71,34 @@ const AIRPORT_FALLBACK_P50: AirportOption[] = [
         <ng-content select="[icon]"></ng-content>
         <input #inputEl [ngModel]="query()" (ngModelChange)="query.set($event); onInput()" (focus)="open.set(true)" (keydown)="onKey($event)"
           [placeholder]="placeholder" autocomplete="off"
-          class="w-full border-2 rounded-xl pl-9 pr-8 py-3 text-sm font-medium text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-400 outline-none transition-colors placeholder:font-normal placeholder:text-gray-400"
-          [class.border-gray-200]="!selected()" [class.border-blue-400]="!!selected()" />
+          class="w-full border-2 rounded-xl pl-9 pr-8 py-3 text-sm font-medium text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-400 outline-none transition-colors placeholder:font-normal placeholder:text-slate-500"
+          [class.border-white/10]="!selected()" [class.border-amber-400]="!!selected()" />
         <button *ngIf="selected()" type="button" (click)="clear()"
-          class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 text-xs transition-colors">x</button>
+          class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-[#1F2937] hover:bg-gray-300 text-slate-400 text-xs transition-colors">x</button>
       </div>
 
       <div *ngIf="open() && filtered().length > 0"
-        class="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+        class="absolute z-50 mt-1 w-full bg-[#0B1020] border border-white/10 rounded-xl shadow-[0_0_45px_rgba(245,158,11,0.12)] max-h-60 overflow-y-auto">
         <button *ngFor="let a of filtered(); let i = index" type="button" (click)="select(a)"
-          class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
-          [class.bg-blue-50]="i === cursor()">
-          <span class="w-10 flex-shrink-0 font-mono font-bold text-blue-600 text-sm">{{ a.iataCode }}</span>
+          class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 transition-colors text-left"
+          [class.bg-amber-50]="i === cursor()">
+          <span class="w-10 flex-shrink-0 font-mono font-bold text-amber-500 text-sm">{{ a.iataCode }}</span>
           <div class="min-w-0">
-            <p class="text-sm font-medium text-gray-900 truncate">
-              {{ a.iataCode }} - {{ a.cityName }} <span class="text-gray-400 font-normal">{{ a.countryName }}</span>
+            <p class="text-sm font-medium text-white truncate">
+              {{ a.iataCode }} - {{ a.cityName }} <span class="text-slate-500 font-normal">{{ a.countryName }}</span>
             </p>
-            <p class="text-xs text-gray-400 truncate">{{ a.name }}</p>
+            <p class="text-xs text-slate-500 truncate">{{ a.name }}</p>
           </div>
         </button>
       </div>
 
       <div *ngIf="open() && query().length >= 2 && filtered().length === 0 && !loading()"
-        class="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl px-4 py-3 text-sm text-gray-400">
+        class="absolute z-50 mt-1 w-full bg-[#0B1020] border border-white/10 rounded-xl shadow-[0_0_45px_rgba(245,158,11,0.12)] px-4 py-3 text-sm text-slate-500">
         Sin resultados para "{{ query() }}"
       </div>
 
       <div *ngIf="open() && loading()"
-        class="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl px-4 py-3 text-sm text-gray-400">
+        class="absolute z-50 mt-1 w-full bg-[#0B1020] border border-white/10 rounded-xl shadow-[0_0_45px_rgba(245,158,11,0.12)] px-4 py-3 text-sm text-slate-500">
         Cargando aeropuertos...
       </div>
     </div>
@@ -247,5 +247,8 @@ export class AirportSearchComponent implements OnInit {
     if (!this.elRef.nativeElement.contains(e.target)) this.open.set(false);
   }
 }
+
+
+
 
 

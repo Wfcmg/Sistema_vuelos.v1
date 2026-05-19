@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthStore } from '../../core/store/auth.store';
@@ -54,7 +54,7 @@ const NAV_GROUPS: NavGroup[] = [
       <aside class="w-60 bg-gray-900 flex flex-col">
         <div class="h-16 flex items-center px-5 border-b border-gray-800 flex-shrink-0">
           <div class="flex items-center gap-2 text-white font-bold">
-            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 15.5L21 4.5L14.5 20L11 13L3 15.5ZM11 13L21 4.5"/></svg>
             <span>Admin Panel</span>
           </div>
         </div>
@@ -68,10 +68,10 @@ const NAV_GROUPS: NavGroup[] = [
                 [routerLinkActiveOptions]="{ exact: !!item.end }"
                 class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-400 hover:text-white hover:bg-gray-800">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" [attr.d]="item.icon"/>
                 </svg>
                 <span class="truncate">{{ item.label }}</span>
-                <svg class="w-3 h-3 ml-auto opacity-40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-3 h-3 ml-auto opacity-40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 5l7 7-7 7"/></svg>
               </a>
             </div>
           </div>
@@ -88,7 +88,7 @@ const NAV_GROUPS: NavGroup[] = [
             </div>
           </div>
           <button (click)="logout()" class="w-full flex items-center gap-2 text-xs text-gray-500 hover:text-red-400 transition-colors py-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             Cerrar sesión
           </button>
         </div>
@@ -111,3 +111,4 @@ export class AdminLayoutComponent {
     this.router.navigate(['/login']);
   }
 }
+

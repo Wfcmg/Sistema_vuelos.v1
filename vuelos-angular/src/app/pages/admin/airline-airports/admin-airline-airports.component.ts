@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminTableComponent } from '../../../shared/components/admin-table/admin-table.component';
@@ -67,3 +67,4 @@ export class AdminAirlineAirportsComponent implements OnInit {
     this.svc.deleteAirlineAirport(airlineId, airportId).subscribe(() => this.load());
   }
 }
+

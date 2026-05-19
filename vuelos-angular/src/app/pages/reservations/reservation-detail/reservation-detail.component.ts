@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -14,15 +14,15 @@ import { es } from 'date-fns/locale';
 
 const STATUS_STYLES: Record<string, string> = {
   CONFIRMED: 'bg-green-100 text-green-700', PENDING: 'bg-yellow-100 text-yellow-700',
-  CANCELLED: 'bg-red-100 text-red-700',    COMPLETED: 'bg-gray-100 text-gray-600',
+  CANCELLED: 'bg-red-100 text-red-700',    COMPLETED: 'bg-[#111827] text-slate-300',
 };
 const STATUS_LABELS: Record<string, string> = {
   CONFIRMED: 'Confirmada', PENDING: 'Pendiente', CANCELLED: 'Cancelada', COMPLETED: 'Completada',
 };
 const CHECKIN_LABELS: Record<string, { label: string; color: string }> = {
-  NOT_CHECKED_IN: { label: 'Sin check-in',  color: 'text-gray-500 bg-gray-100' },
+  NOT_CHECKED_IN: { label: 'Sin check-in',  color: 'text-slate-400 bg-[#111827]' },
   CHECKED_IN:     { label: 'Check-in OK',   color: 'text-green-700 bg-green-100' },
-  BOARDED:        { label: 'Embarcado',     color: 'text-blue-700 bg-blue-100' },
+  BOARDED:        { label: 'Embarcado',     color: 'text-amber-600 bg-amber-100' },
   NO_SHOW:        { label: 'No se presentó',color: 'text-red-700 bg-red-100' },
 };
 const SERVICE_CAT_LABELS: Record<string, string> = {
@@ -66,94 +66,94 @@ interface PassengerState {
   imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   template: `
     <div class="max-w-2xl mx-auto px-4 py-8 space-y-5">
-      <button (click)="router.navigate(['/my-trips'])" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
+      <button (click)="router.navigate(['/my-trips'])" class="text-sm text-amber-500 hover:underline flex items-center gap-1">
         ← Mis viajes
       </button>
 
       <div *ngIf="loading()" class="flex justify-center py-32">
-        <svg class="w-7 h-7 animate-spin text-blue-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+        <svg class="w-7 h-7 animate-spin text-amber-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
       </div>
 
       <ng-container *ngIf="!loading() && reservation() as r">
         <!-- Header -->
         <div class="flex items-start justify-between">
           <div>
-            <h1 class="text-xl font-bold text-gray-900">Reserva #{{ r.reservationCode }}</h1>
-            <p class="text-sm text-gray-400 mt-0.5">Creada el {{ createdDate(r) }}</p>
+            <h1 class="text-xl font-bold text-white">Reserva #{{ r.reservationCode }}</h1>
+            <p class="text-sm text-slate-500 mt-0.5">Creada el {{ createdDate(r) }}</p>
           </div>
           <span [class]="'text-sm font-medium px-3 py-1 rounded-full ' + statusStyle(r.status)">{{ statusLabel(r.status) }}</span>
         </div>
 
         <!-- Vuelo -->
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="bg-[#0B1020] rounded-xl border border-white/10 p-5">
           <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-            <p class="font-semibold text-gray-800">{{ r.flight?.airline?.name ?? 'Aerolínea' }}</p>
+            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 15.5L21 4.5L14.5 20L11 13L3 15.5ZM11 13L21 4.5"/></svg>
+            <p class="font-semibold text-slate-100">{{ r.flight?.airline?.name ?? 'Aerolínea' }}</p>
           </div>
           <div class="flex items-center gap-4">
             <div>
-              <p class="text-3xl font-bold text-gray-900">{{ depTime(r) }}</p>
-              <p class="text-xs font-bold text-gray-500">{{ r.flight?.route?.originAirport?.iataCode ?? r.flight?.originAirportIata }}</p>
+              <p class="text-3xl font-bold text-white">{{ depTime(r) }}</p>
+              <p class="text-xs font-bold text-slate-400">{{ r.flight?.route?.originAirport?.iataCode ?? r.flight?.originAirportIata }}</p>
             </div>
             <div class="flex-1 flex items-center gap-1">
-              <div class="flex-1 h-px bg-gray-200"></div>
-              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              <div class="flex-1 h-px bg-[#1F2937]"></div>
+              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 5l7 7-7 7"/></svg>
             </div>
             <div class="text-right">
-              <p class="text-3xl font-bold text-gray-900">{{ arrTime(r) }}</p>
-              <p class="text-xs font-bold text-gray-500">{{ r.flight?.route?.destinationAirport?.iataCode ?? r.flight?.destinationAirportIata }}</p>
+              <p class="text-3xl font-bold text-white">{{ arrTime(r) }}</p>
+              <p class="text-xs font-bold text-slate-400">{{ r.flight?.route?.destinationAirport?.iataCode ?? r.flight?.destinationAirportIata }}</p>
             </div>
           </div>
         </div>
 
         <!-- Pasajeros -->
         <div class="space-y-3">
-          <h2 class="font-semibold text-gray-800 flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          <h2 class="font-semibold text-slate-100 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             Pasajeros ({{ passengerStates().length }})
           </h2>
 
-          <div *ngFor="let ps of passengerStates(); let i = index" class="border border-gray-200 rounded-xl overflow-hidden">
+          <div *ngFor="let ps of passengerStates(); let i = index" class="border border-white/10 rounded-xl overflow-hidden">
             <button type="button" (click)="togglePassenger(i)"
-              class="w-full flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 transition-colors">
+              class="w-full flex items-center justify-between px-5 py-4 bg-[#0B1020] hover:bg-[#050816] transition-colors">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
                 <div class="text-left">
-                  <p class="font-semibold text-gray-900 text-sm">{{ ps.passenger.firstName }} {{ ps.passenger.lastName }}</p>
-                  <p class="text-xs text-gray-400">Doc: {{ ps.passenger.documentNumber }}</p>
+                  <p class="font-semibold text-white text-sm">{{ ps.passenger.firstName }} {{ ps.passenger.lastName }}</p>
+                  <p class="text-xs text-slate-500">Doc: {{ ps.passenger.documentNumber }}</p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
                 <span [class]="'text-xs font-semibold px-2.5 py-1 rounded-full ' + checkInColor(ps)">{{ checkInLabel(ps) }}</span>
-                <svg [class]="'w-4 h-4 text-gray-400 transition-transform ' + (ps.expanded ? 'rotate-180' : '')" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                <svg [class]="'w-4 h-4 text-slate-500 transition-transform ' + (ps.expanded ? 'rotate-180' : '')" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M19 9l-7 7-7-7"/></svg>
               </div>
             </button>
 
-            <div *ngIf="ps.expanded" class="bg-gray-50 border-t border-gray-200 px-5 py-4 space-y-5">
+            <div *ngIf="ps.expanded" class="bg-[#050816] border-t border-white/10 px-5 py-4 space-y-5">
               <!-- Check-in -->
               <div>
-                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Check-in</h4>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Check-in</h4>
                 <div *ngIf="ps.loadingBP" class="flex justify-center py-2">
-                  <svg class="w-4 h-4 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  <svg class="w-4 h-4 animate-spin text-slate-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                 </div>
                 <ng-container *ngIf="!ps.loadingBP">
-                  <div *ngIf="ps.boardingPasses[0] as bp" class="bg-white border border-green-200 rounded-xl p-4 space-y-3">
+                  <div *ngIf="ps.boardingPasses[0] as bp" class="bg-[#0B1020] border border-green-200 rounded-xl p-4 space-y-3">
                     <div class="flex items-center gap-4">
-                      <svg class="w-8 h-8 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <svg class="w-8 h-8 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                       <div>
-                        <p class="font-semibold text-gray-800 text-sm">Check-in realizado</p>
-                        <p class="text-xs text-gray-500 font-mono mt-1">{{ bp.boardingCode }}</p>
+                        <p class="font-semibold text-slate-100 text-sm">Check-in realizado</p>
+                        <p class="text-xs text-slate-400 font-mono mt-1">{{ bp.boardingCode }}</p>
                       </div>
                     </div>
                     <!-- Asiento asignado o selector de asiento -->
-                    <div class="border-t border-gray-100 pt-3">
-                      <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Asiento</p>
+                    <div class="border-t border-white/10 pt-3">
+                      <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">Asiento</p>
                       <div *ngIf="ps.passenger.seatNumber" class="flex items-center justify-between">
                         <div>
-                          <p class="text-sm font-semibold text-blue-700 font-mono">{{ ps.passenger.seatNumber }}</p>
-                          <p class="text-xs text-gray-400">{{ seatLabel(ps.passenger.seatNumber) }}</p>
+                          <p class="text-sm font-semibold text-amber-600 font-mono">{{ ps.passenger.seatNumber }}</p>
+                          <p class="text-xs text-slate-500">{{ seatLabel(ps.passenger.seatNumber) }}</p>
                         </div>
                         <span *ngIf="seatPrice(ps.passenger.seatNumber) > 0" class="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
                           +\${{ seatPrice(ps.passenger.seatNumber).toFixed(2) }}
@@ -162,49 +162,49 @@ interface PassengerState {
                     </div>
                   </div>
                   <ng-container *ngIf="!ps.boardingPasses[0] && canEdit()">
-                    <div *ngIf="ps.checkingIn" class="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+                    <div *ngIf="ps.checkingIn" class="bg-[#0B1020] border border-white/10 rounded-xl p-4 space-y-3">
                       <div class="flex items-start justify-between gap-3">
                         <div>
-                          <p class="text-sm font-semibold text-gray-800">Seleccion de asiento</p>
-                          <p class="text-xs text-gray-500 mt-1">Elige un asiento o usa asignacion automatica sin costo.</p>
+                          <p class="text-sm font-semibold text-slate-100">Seleccion de asiento</p>
+                          <p class="text-xs text-slate-400 mt-1">Elige un asiento o usa asignacion automatica sin costo.</p>
                         </div>
                         <button type="button" (click)="autoAssignSeat(i)"
-                          class="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg">
+                          class="text-xs font-semibold text-amber-500 hover:text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">
                           Automatico gratis
                         </button>
                       </div>
 
                       <div class="relative mx-auto max-w-[32rem] px-7 sm:px-12">
-                        <div class="relative mx-10 h-20 rounded-t-[100px] border-x border-t border-blue-100 bg-gradient-to-b from-sky-100 via-white to-white shadow-sm">
+                        <div class="relative mx-10 h-20 rounded-t-[100px] border-x border-t border-amber-100 bg-gradient-to-b from-sky-100 via-white to-white shadow-[0_0_30px_rgba(245,158,11,0.06)]">
                           <div class="absolute left-1/2 top-4 grid -translate-x-1/2 grid-cols-2 gap-2">
                             <span class="block h-4 w-9 rounded-t-full bg-blue-200/80 border border-blue-300"></span>
                             <span class="block h-4 w-9 rounded-t-full bg-blue-200/80 border border-blue-300"></span>
                           </div>
-                          <span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wide text-blue-500">Frente del avion</span>
+                          <span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-wide text-amber-500">Frente del avion</span>
                         </div>
 
                         <div class="relative">
-                          <div class="hidden sm:flex absolute -left-10 top-[17.5rem] h-60 w-20 rounded-l-[90%] bg-gradient-to-r from-sky-200 to-sky-50 border border-blue-100 items-center justify-center">
+                          <div class="hidden sm:flex absolute -left-10 top-[17.5rem] h-60 w-20 rounded-l-[90%] bg-gradient-to-r from-sky-200 to-sky-50 border border-amber-100 items-center justify-center">
                             <span class="-rotate-90 text-[11px] font-bold tracking-wider text-sky-700">ALA IZQ.</span>
                           </div>
-                          <div class="hidden sm:flex absolute -right-10 top-[17.5rem] h-60 w-20 rounded-r-[90%] bg-gradient-to-l from-sky-200 to-sky-50 border border-blue-100 items-center justify-center">
+                          <div class="hidden sm:flex absolute -right-10 top-[17.5rem] h-60 w-20 rounded-r-[90%] bg-gradient-to-l from-sky-200 to-sky-50 border border-amber-100 items-center justify-center">
                             <span class="rotate-90 text-[11px] font-bold tracking-wider text-sky-700">ALA DER.</span>
                           </div>
                           <span class="hidden sm:flex absolute -left-10 top-[24.5rem] -rotate-90 rounded-full bg-orange-50 px-2 py-1 text-[10px] font-bold tracking-wider text-orange-600 border border-orange-200">SALIDA</span>
                           <span class="hidden sm:flex absolute -right-10 top-[24.5rem] rotate-90 rounded-full bg-orange-50 px-2 py-1 text-[10px] font-bold tracking-wider text-orange-600 border border-orange-200">SALIDA</span>
 
-                          <div class="relative mx-auto rounded-b-[54px] border-x border-b border-blue-100 bg-white px-4 pb-6 pt-4 shadow-inner">
+                          <div class="relative mx-auto rounded-b-[54px] border-x border-b border-amber-100 bg-[#0B1020] px-4 pb-6 pt-4 shadow-inner">
                             <div class="mb-3 grid grid-cols-[1fr_2.5rem_1fr] items-center gap-2 text-center">
-                              <span class="rounded-lg border border-gray-200 bg-gray-50 py-1 text-[10px] font-bold text-gray-500">WC</span>
+                              <span class="rounded-lg border border-white/10 bg-[#050816] py-1 text-[10px] font-bold text-slate-400">WC</span>
                               <span class="text-[10px] font-bold uppercase text-gray-300">Pasillo</span>
-                              <span class="rounded-lg border border-gray-200 bg-gray-50 py-1 text-[10px] font-bold text-gray-500">WC</span>
+                              <span class="rounded-lg border border-white/10 bg-[#050816] py-1 text-[10px] font-bold text-slate-400">WC</span>
                             </div>
                             <div class="mb-3 grid grid-cols-[1fr_2.5rem_1fr] gap-2 text-center">
-                              <div class="grid grid-cols-3 gap-1 text-[10px] font-bold text-gray-400">
+                              <div class="grid grid-cols-3 gap-1 text-[10px] font-bold text-slate-500">
                                 <span *ngFor="let letter of leftSeatLetters">{{ letter }}</span>
                               </div>
                               <span class="text-[10px] font-bold text-gray-300">Fila</span>
-                              <div class="grid grid-cols-3 gap-1 text-[10px] font-bold text-gray-400">
+                              <div class="grid grid-cols-3 gap-1 text-[10px] font-bold text-slate-500">
                                 <span *ngFor="let letter of rightSeatLetters">{{ letter }}</span>
                               </div>
                             </div>
@@ -246,42 +246,42 @@ interface PassengerState {
                               </ng-container>
                             </div>
 
-                            <div class="mt-3 grid grid-cols-4 gap-2 text-[10px] font-semibold text-gray-500">
-                              <span class="flex items-center justify-center gap-1"><i class="h-2.5 w-2.5 rounded bg-white border border-gray-300"></i>Libre</span>
+                            <div class="mt-3 grid grid-cols-4 gap-2 text-[10px] font-semibold text-slate-400">
+                              <span class="flex items-center justify-center gap-1"><i class="h-2.5 w-2.5 rounded bg-[#0B1020] border border-white/15"></i>Libre</span>
                               <span class="flex items-center justify-center gap-1"><i class="h-2.5 w-2.5 rounded bg-amber-100 border border-amber-300"></i>Premium</span>
-                              <span class="flex items-center justify-center gap-1"><i class="h-2.5 w-2.5 rounded bg-blue-600"></i>Elegido</span>
+                              <span class="flex items-center justify-center gap-1"><i class="h-2.5 w-2.5 rounded bg-amber-500"></i>Elegido</span>
                               <span class="flex items-center justify-center gap-1"><i class="h-2.5 w-2.5 rounded bg-red-100 border border-red-300"></i>Ocupado</span>
                             </div>
                             <div class="mt-3 grid grid-cols-[1fr_2.5rem_1fr] items-center gap-2 text-center">
-                              <span class="rounded-lg border border-gray-200 bg-gray-50 py-1 text-[10px] font-bold text-gray-500">WC</span>
+                              <span class="rounded-lg border border-white/10 bg-[#050816] py-1 text-[10px] font-bold text-slate-400">WC</span>
                               <span class="text-[10px] font-bold uppercase text-gray-300">Cola</span>
-                              <span class="rounded-lg border border-gray-200 bg-gray-50 py-1 text-[10px] font-bold text-gray-500">WC</span>
+                              <span class="rounded-lg border border-white/10 bg-[#050816] py-1 text-[10px] font-bold text-slate-400">WC</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <div class="flex items-center justify-between rounded-lg bg-blue-50 px-3 py-2">
+                      <div class="flex items-center justify-between rounded-lg bg-amber-50 px-3 py-2">
                         <span class="text-xs text-blue-900">
                           {{ ps.seatInput ? ('Asiento ' + ps.seatInput + ' - ' + seatLabel(ps.seatInput)) : 'Asiento automatico sin costo al confirmar' }}
                         </span>
-                        <span class="text-xs font-bold text-blue-700">
+                        <span class="text-xs font-bold text-amber-600">
                           {{ ps.seatInput ? ('+$' + seatPrice(ps.seatInput).toFixed(2)) : '$0.00' }}
                         </span>
                       </div>
                       <div class="flex gap-2">
                         <button (click)="doCheckIn(i)"
-                          class="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+                          class="flex-1 flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white text-sm font-medium py-2 rounded-lg transition-colors">
                           Confirmar check-in
                         </button>
                         <button (click)="updatePS(i, {checkingIn: false, seatInput: ''})"
-                          class="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg transition-colors">
+                          class="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 border border-white/10 rounded-lg transition-colors">
                           Cancelar
                         </button>
                       </div>
                     </div>
                     <button *ngIf="!ps.checkingIn" (click)="startCheckIn(i)"
-                      class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                      class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                       Hacer check-in
                     </button>
                   </ng-container>
@@ -290,35 +290,35 @@ interface PassengerState {
 
               <!-- Servicios -->
               <div>
-                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3 flex items-center justify-between">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 flex items-center justify-between">
                   <span>Servicios adicionales</span>
                   <button *ngIf="canEdit() && !ps.addingService" (click)="updatePS(i, {addingService: true})"
-                    class="text-blue-600 hover:text-blue-700 flex items-center gap-0.5 font-semibold normal-case tracking-normal text-xs">
+                    class="text-amber-500 hover:text-amber-600 flex items-center gap-0.5 font-semibold normal-case tracking-normal text-xs">
                     + Agregar
                   </button>
                 </h4>
                 <div *ngIf="ps.loadingServices" class="flex justify-center py-3">
-                  <svg class="w-4 h-4 animate-spin text-gray-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  <svg class="w-4 h-4 animate-spin text-slate-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                 </div>
-                <p *ngIf="!ps.loadingServices && ps.passengerServices.length === 0 && !ps.addingService" class="text-xs text-gray-400 italic">Sin servicios adicionales.</p>
-                <div *ngFor="let svc of ps.passengerServices" class="flex items-center justify-between bg-white border border-gray-100 rounded-lg px-3 py-2 mb-2">
+                <p *ngIf="!ps.loadingServices && ps.passengerServices.length === 0 && !ps.addingService" class="text-xs text-slate-500 italic">Sin servicios adicionales.</p>
+                <div *ngFor="let svc of ps.passengerServices" class="flex items-center justify-between bg-[#0B1020] border border-white/10 rounded-lg px-3 py-2 mb-2">
                   <div>
-                    <p class="text-sm font-medium text-gray-800">{{ svc.serviceConfig?.service?.name ?? 'Servicio' }}</p>
-                    <p class="text-xs text-gray-400">{{ catLabel(svc.serviceConfig?.service?.category) }} · x{{ svc.quantity }}</p>
+                    <p class="text-sm font-medium text-slate-100">{{ svc.serviceConfig?.service?.name ?? 'Servicio' }}</p>
+                    <p class="text-xs text-slate-500">{{ catLabel(svc.serviceConfig?.service?.category) }} · x{{ svc.quantity }}</p>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span *ngIf="svc.quantity && svc.unitPriceAtBooking" class="text-xs font-semibold text-gray-700">\${{ (svc.quantity * (+svc.unitPriceAtBooking)).toFixed(2) }}</span>
+                    <span *ngIf="svc.quantity && svc.unitPriceAtBooking" class="text-xs font-semibold text-slate-200">\${{ (svc.quantity * (+svc.unitPriceAtBooking)).toFixed(2) }}</span>
                     <button *ngIf="canEdit()" (click)="removeService(i, svc.id)"
                       class="text-gray-300 hover:text-red-500 transition-colors">
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                     </button>
                   </div>
                 </div>
 
-                <div *ngIf="ps.addingService" class="bg-white border border-blue-200 rounded-lg p-3 space-y-2">
+                <div *ngIf="ps.addingService" class="bg-[#0B1020] border border-amber-200 rounded-lg p-3 space-y-2">
                   <select [ngModel]="ps.selectedConfig" (ngModelChange)="selectServiceConfig(i, $event)"
                     [disabled]="serviceConfigsLoading() || serviceConfigs().length === 0"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-50 disabled:text-gray-400">
+                    class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none disabled:bg-[#050816] disabled:text-slate-500">
                     <option [ngValue]="''">Selecciona un servicio...</option>
                     <option *ngIf="serviceConfigsLoading()" value="" disabled>Cargando servicios...</option>
                     <option *ngIf="!serviceConfigsLoading() && serviceConfigs().length === 0" value="" disabled>No hay servicios disponibles</option>
@@ -327,21 +327,21 @@ interface PassengerState {
                     </option>
                   </select>
                   <div *ngIf="selectedServiceConfig(ps) as selected"
-                    class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 flex items-center justify-between gap-3">
+                    class="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 flex items-center justify-between gap-3">
                     <div class="min-w-0">
                       <p class="text-sm font-semibold text-blue-950 truncate">{{ selected.service?.name ?? 'Servicio adicional' }}</p>
-                      <p class="text-xs text-blue-700">{{ catLabel(selected.service?.category) }} - {{ selected.currency }}</p>
+                      <p class="text-xs text-amber-600">{{ catLabel(selected.service?.category) }} - {{ selected.currency }}</p>
                     </div>
-                    <span class="text-sm font-bold text-blue-700">\${{ (+selected.price).toFixed(2) }}</span>
+                    <span class="text-sm font-bold text-amber-600">\${{ (+selected.price).toFixed(2) }}</span>
                   </div>
                   <p *ngIf="serviceConfigsError()" class="text-xs text-red-500">{{ serviceConfigsError() }}</p>
                   <div class="flex gap-2">
                     <button (click)="addService(i)" [disabled]="!ps.selectedConfig"
-                      class="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 rounded-lg transition-colors disabled:opacity-60">
+                      class="flex-1 flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-white text-xs font-medium py-2 rounded-lg transition-colors disabled:opacity-60">
                       Agregar servicio
                     </button>
                     <button (click)="updatePS(i, {addingService: false, selectedConfig: ''})"
-                      class="px-3 py-2 text-xs text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg transition-colors">
+                      class="px-3 py-2 text-xs text-slate-400 hover:text-slate-200 border border-white/10 rounded-lg transition-colors">
                       Cancelar
                     </button>
                   </div>
@@ -352,69 +352,69 @@ interface PassengerState {
         </div>
 
         <!-- Factura / Resumen de pago -->
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <div class="bg-[#0B1020] rounded-xl border border-white/10 p-5">
+          <h2 class="font-semibold text-slate-100 mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             Factura
           </h2>
           <ng-container *ngIf="invoice() as inv">
             <div class="space-y-2 text-sm">
-              <div class="flex justify-between text-gray-500">
+              <div class="flex justify-between text-slate-400">
                 <span>N° Factura</span>
-                <span class="font-mono font-semibold text-gray-800">{{ inv.invoiceNumber }}</span>
+                <span class="font-mono font-semibold text-slate-100">{{ inv.invoiceNumber }}</span>
               </div>
-              <div *ngIf="payment() as p" class="flex justify-between text-gray-500">
+              <div *ngIf="payment() as p" class="flex justify-between text-slate-400">
                 <span>Método de pago</span>
-                <span class="font-medium text-gray-700">{{ p.provider }}</span>
+                <span class="font-medium text-slate-200">{{ p.provider }}</span>
               </div>
-              <div class="flex justify-between text-gray-500 pt-2 border-t border-gray-100">
+              <div class="flex justify-between text-slate-400 pt-2 border-t border-white/10">
                 <span>Subtotal</span>
                 <span>\${{ (+inv.subtotal).toFixed(2) }}</span>
               </div>
-              <div class="flex justify-between text-gray-500">
+              <div class="flex justify-between text-slate-400">
                 <span>IVA 15%</span>
                 <span>\${{ (+inv.taxAmount).toFixed(2) }}</span>
               </div>
-              <div class="flex justify-between font-semibold text-gray-800 text-base pt-2 border-t border-gray-100">
+              <div class="flex justify-between font-semibold text-slate-100 text-base pt-2 border-t border-white/10">
                 <span>Total</span>
-                <span class="text-blue-600">\${{ (+inv.total).toFixed(2) }}</span>
+                <span class="text-amber-500">\${{ (+inv.total).toFixed(2) }}</span>
               </div>
             </div>
           </ng-container>
           <ng-container *ngIf="!invoice()">
             <div class="flex items-center justify-between">
-              <span class="font-semibold text-gray-800">Total pagado</span>
-              <span class="text-2xl font-bold text-blue-600">\${{ (+r.totalAmount).toFixed(2) }}</span>
+              <span class="font-semibold text-slate-100">Total pagado</span>
+              <span class="text-2xl font-bold text-amber-500">\${{ (+r.totalAmount).toFixed(2) }}</span>
             </div>
-            <p *ngIf="payment()" class="text-xs text-gray-400 mt-2">Factura en proceso de generacion...</p>
+            <p *ngIf="payment()" class="text-xs text-slate-500 mt-2">Factura en proceso de generacion...</p>
           </ng-container>
-          <div *ngIf="pendingExtrasTotal() > 0" class="mt-4 pt-4 border-t border-gray-100 space-y-3">
+          <div *ngIf="pendingExtrasTotal() > 0" class="mt-4 pt-4 border-t border-white/10 space-y-3">
             <div class="space-y-2 text-sm">
-              <div class="flex justify-between text-gray-500">
+              <div class="flex justify-between text-slate-400">
                 <span>Servicios adicionales</span>
                 <span>\${{ serviceExtrasTotal().toFixed(2) }}</span>
               </div>
-              <div *ngIf="seatFeesTotal() > 0" class="flex justify-between text-gray-500">
+              <div *ngIf="seatFeesTotal() > 0" class="flex justify-between text-slate-400">
                 <span>Extra de asientos</span>
                 <span>\${{ seatFeesTotal().toFixed(2) }}</span>
               </div>
-              <div class="flex justify-between font-semibold text-gray-800 pt-2 border-t border-gray-100">
+              <div class="flex justify-between font-semibold text-slate-100 pt-2 border-t border-white/10">
                 <span>Checkout de extras</span>
                 <span class="text-amber-600">\${{ pendingExtrasTotal().toFixed(2) }}</span>
               </div>
-              <div class="flex justify-between font-bold text-gray-900">
+              <div class="flex justify-between font-bold text-white">
                 <span>Total con extras</span>
-                <span class="text-blue-600">\${{ grandTotal().toFixed(2) }}</span>
+                <span class="text-amber-500">\${{ grandTotal().toFixed(2) }}</span>
               </div>
             </div>
             <button type="button" (click)="toggleCheckout()"
               class="w-full bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold py-2.5 rounded-lg transition-colors">
               {{ checkoutOpen() ? 'Ocultar checkout' : 'Continuar checkout de extras' }}
             </button>
-            <div *ngIf="checkoutOpen()" class="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700 space-y-4 shadow-sm">
+            <div *ngIf="checkoutOpen()" class="rounded-xl border border-white/10 bg-[#0B1020] p-4 text-sm text-slate-200 space-y-4 shadow-[0_0_30px_rgba(245,158,11,0.06)]">
               <div *ngIf="extrasPaymentRef(); else extrasCheckoutFormTpl" class="rounded-xl border border-green-200 bg-green-50 p-4 text-green-800">
                 <div class="flex items-start gap-3">
-                  <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   <div>
                     <p class="font-semibold">Pago de extras aprobado</p>
                     <p class="text-xs mt-1">Comprobante simulado: <span class="font-mono">{{ extrasPaymentRef() }}</span></p>
@@ -427,34 +427,34 @@ interface PassengerState {
                 <form [formGroup]="extrasCheckoutForm" (ngSubmit)="submitExtrasCheckout()" class="space-y-4">
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <p class="font-semibold text-gray-900">Checkout de extras</p>
-                      <p class="text-xs text-gray-500 mt-1">Paga servicios y asientos sin modificar el boleto base.</p>
+                      <p class="font-semibold text-white">Checkout de extras</p>
+                      <p class="text-xs text-slate-400 mt-1">Paga servicios y asientos sin modificar el boleto base.</p>
                     </div>
-                    <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">\${{ pendingExtrasTotal().toFixed(2) }}</span>
+                    <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-600">\${{ pendingExtrasTotal().toFixed(2) }}</span>
                   </div>
 
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-3 space-y-2">
-                    <div *ngFor="let item of extraCheckoutItems()" class="flex items-center justify-between gap-3 rounded-lg bg-white border border-gray-100 px-3 py-2">
+                  <div class="rounded-xl border border-white/10 bg-[#050816] p-3 space-y-2">
+                    <div *ngFor="let item of extraCheckoutItems()" class="flex items-center justify-between gap-3 rounded-lg bg-[#0B1020] border border-white/10 px-3 py-2">
                       <div class="min-w-0">
-                        <p class="text-sm font-semibold text-gray-900 truncate">{{ item.title }}</p>
-                        <p class="text-xs text-gray-400 truncate">{{ item.subtitle }}</p>
+                        <p class="text-sm font-semibold text-white truncate">{{ item.title }}</p>
+                        <p class="text-xs text-slate-500 truncate">{{ item.subtitle }}</p>
                       </div>
-                      <span class="text-sm font-bold text-gray-800">\${{ item.amount.toFixed(2) }}</span>
+                      <span class="text-sm font-bold text-slate-100">\${{ item.amount.toFixed(2) }}</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 pt-2 text-xs text-gray-500">
+                    <div class="grid grid-cols-2 gap-2 pt-2 text-xs text-slate-400">
                       <div class="flex justify-between"><span>Subtotal</span><span>\${{ extrasSubtotal().toFixed(2) }}</span></div>
                       <div class="flex justify-between"><span>IVA 15%</span><span>\${{ extrasTaxAmount().toFixed(2) }}</span></div>
                     </div>
                   </div>
 
                   <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Metodo de pago</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">Metodo de pago</p>
                     <div class="grid grid-cols-3 gap-2">
                       <label *ngFor="let method of extraPaymentMethods" class="cursor-pointer">
                         <input type="radio" formControlName="provider" [value]="method.value" class="sr-only peer" />
-                        <div class="h-full rounded-xl border-2 border-gray-200 px-3 py-2 text-center transition-colors peer-checked:border-blue-500 peer-checked:bg-blue-50">
-                          <p class="text-xs font-bold text-gray-800">{{ method.label }}</p>
-                          <p class="text-[10px] text-gray-400 mt-0.5">{{ method.hint }}</p>
+                        <div class="h-full rounded-xl border-2 border-white/10 px-3 py-2 text-center transition-colors peer-checked:border-amber-500 peer-checked:bg-amber-50">
+                          <p class="text-xs font-bold text-slate-100">{{ method.label }}</p>
+                          <p class="text-[10px] text-slate-500 mt-0.5">{{ method.hint }}</p>
                         </div>
                       </label>
                     </div>
@@ -462,62 +462,62 @@ interface PassengerState {
 
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label class="block text-xs font-medium text-gray-500 mb-1">Nombre / razon social</label>
+                      <label class="block text-xs font-medium text-slate-400 mb-1">Nombre / razon social</label>
                       <input formControlName="payerName" placeholder="Juan Cevallos"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-gray-500 mb-1">RUC / cedula</label>
+                      <label class="block text-xs font-medium text-slate-400 mb-1">RUC / cedula</label>
                       <input formControlName="taxId" placeholder="0912345678"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-gray-500 mb-1">Correo de comprobante</label>
+                      <label class="block text-xs font-medium text-slate-400 mb-1">Correo de comprobante</label>
                       <input formControlName="email" type="email" placeholder="cliente@email.com"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-gray-500 mb-1">Direccion de facturacion</label>
+                      <label class="block text-xs font-medium text-slate-400 mb-1">Direccion de facturacion</label>
                       <input formControlName="billingAddress" placeholder="Av. Principal y Calle 10"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                   </div>
 
-                  <div *ngIf="extrasCheckoutForm.value.provider === 'CARD'" class="rounded-xl border border-blue-100 bg-blue-50 p-3 space-y-3">
+                  <div *ngIf="extrasCheckoutForm.value.provider === 'CARD'" class="rounded-xl border border-amber-100 bg-amber-50 p-3 space-y-3">
                     <div class="grid grid-cols-3 gap-2">
                       <label *ngFor="let brand of ['VISA', 'MASTERCARD', 'AMEX']" class="cursor-pointer">
                         <input type="radio" formControlName="cardBrand" [value]="brand" class="sr-only peer" />
-                        <div class="rounded-lg border border-blue-100 bg-white py-2 text-center text-xs font-bold text-gray-600 peer-checked:border-blue-500 peer-checked:text-blue-700">{{ brand }}</div>
+                        <div class="rounded-lg border border-amber-100 bg-[#0B1020] py-2 text-center text-xs font-bold text-slate-300 peer-checked:border-amber-500 peer-checked:text-amber-600">{{ brand }}</div>
                       </label>
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-gray-500 mb-1">Nombre en tarjeta</label>
+                      <label class="block text-xs font-medium text-slate-400 mb-1">Nombre en tarjeta</label>
                       <input formControlName="cardholderName" placeholder="JUAN CEVALLOS"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none uppercase" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none uppercase" />
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-gray-500 mb-1">Numero de tarjeta</label>
+                      <label class="block text-xs font-medium text-slate-400 mb-1">Numero de tarjeta</label>
                       <input formControlName="cardNumber" [value]="extrasCardDisplay" (input)="onExtrasCardInput($event)" placeholder="4111 1111 1111 1111"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                       <input formControlName="expiry" placeholder="MM/AA" maxlength="5" (input)="onExtrasExpiryInput($event)"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                       <input formControlName="cvv" type="password" placeholder="CVV" maxlength="4"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                        class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                     </div>
                   </div>
 
-                  <div *ngIf="extrasCheckoutForm.value.provider === 'PAYPAL'" class="rounded-xl border border-blue-100 bg-blue-50 p-3">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Correo PayPal</label>
+                  <div *ngIf="extrasCheckoutForm.value.provider === 'PAYPAL'" class="rounded-xl border border-amber-100 bg-amber-50 p-3">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Correo PayPal</label>
                     <input formControlName="paypalEmail" type="email" placeholder="paypal@email.com"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                      class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
                   </div>
 
-                  <div *ngIf="extrasCheckoutForm.value.provider === 'TRANSFER'" class="rounded-xl border border-blue-100 bg-blue-50 p-3">
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Referencia bancaria</label>
+                  <div *ngIf="extrasCheckoutForm.value.provider === 'TRANSFER'" class="rounded-xl border border-amber-100 bg-amber-50 p-3">
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Referencia bancaria</label>
                     <input formControlName="bankReference" placeholder="TRF-2026-000123"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none uppercase" />
+                      class="w-full border border-white/15 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none uppercase" />
                   </div>
 
                   <p *ngIf="extrasCheckoutError()" class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-600">{{ extrasCheckoutError() }}</p>
@@ -527,7 +527,7 @@ interface PassengerState {
                     <svg *ngIf="extrasPayLoading()" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                     {{ extrasPayLoading() ? 'Procesando extras...' : 'Pagar extras ahora' }}
                   </button>
-                  <p class="text-[11px] text-gray-400 text-center">Simulacion local hasta habilitar cargos parciales en backend.</p>
+                  <p class="text-[11px] text-slate-500 text-center">Simulacion local hasta habilitar cargos parciales en backend.</p>
                 </form>
               </ng-template>
             </div>
@@ -869,15 +869,15 @@ export class ReservationDetailComponent implements OnInit {
     const price = this.seatPrice(seat);
     const base = 'h-10 rounded-lg text-[10px] font-bold transition-colors border flex flex-col items-center justify-center leading-none';
     if (this.isSeatOccupiedForPassenger(ps, seat)) return `${base} bg-red-100 text-red-700 border-red-300 cursor-not-allowed opacity-90`;
-    if (selected) return `${base} bg-blue-600 text-white border-blue-600 shadow-sm`;
+    if (selected) return `${base} bg-amber-500 text-white border-blue-600 shadow-[0_0_30px_rgba(245,158,11,0.06)]`;
     if (price > 0) return `${base} bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100`;
-    return `${base} bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-200`;
+    return `${base} bg-[#0B1020] text-slate-200 border-white/10 hover:bg-amber-50 hover:border-amber-200`;
   }
 
   rowMarkerClass(row: number) {
     const base = 'h-10 flex items-center justify-center rounded-lg text-[10px] font-bold';
     if (this.isExitRow(row)) return `${base} bg-emerald-50 text-emerald-700 border border-emerald-200`;
-    return `${base} text-gray-400`;
+    return `${base} text-slate-500`;
   }
 
   isExitRow(row: number) {
@@ -1047,3 +1047,6 @@ export class ReservationDetailComponent implements OnInit {
     try { return format(new Date(d), 'HH:mm'); } catch { return '--:--'; }
   }
 }
+
+
+

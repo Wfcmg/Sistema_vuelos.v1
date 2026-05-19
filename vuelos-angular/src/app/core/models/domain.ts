@@ -1,4 +1,4 @@
-// core/models/domain.ts — espejo del schema Prisma del backend
+﻿// core/models/domain.ts — espejo del schema Prisma del backend
 
 export type UserRole          = 'CUSTOMER' | 'ADMIN' | 'SERVICE';
 export type FlightStatus      = 'SCHEDULED' | 'DELAYED' | 'CANCELLED' | 'COMPLETED';
@@ -142,3 +142,4 @@ export interface AirlineServiceConfig {
   service?: { id: string; name: string; code: string; category: string };
   airline?: { id: string; name: string; iataCode: string };
 }
+

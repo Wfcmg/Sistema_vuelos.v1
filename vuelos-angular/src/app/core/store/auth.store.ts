@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+﻿import { Injectable, signal, computed } from '@angular/core';
 import type { AuthUser } from '../models/domain';
 
 const TOKEN_KEY = 'vuelos_token';
@@ -44,3 +44,4 @@ export class AuthStore {
     this._token.set(null);
   }
 }
+

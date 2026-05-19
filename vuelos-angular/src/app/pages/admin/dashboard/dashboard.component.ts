@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+﻿import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthStore } from '../../../core/store/auth.store';
@@ -34,3 +34,4 @@ export class DashboardComponent {
   auth  = inject(AuthStore);
   cards = CARDS;
 }
+

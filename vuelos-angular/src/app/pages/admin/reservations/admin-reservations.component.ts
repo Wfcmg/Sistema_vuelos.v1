@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminTableComponent } from '../../../shared/components/admin-table/admin-table.component';
@@ -45,3 +45,4 @@ export class AdminReservationsComponent implements OnInit {
     obs.subscribe({ next: () => { this.modal.set(false); this.saving.set(false); this.load(); }, error: () => this.saving.set(false) }); }
   del(id: string) { this.svc.deleteReservation(id).subscribe(() => this.load()); }
 }
+

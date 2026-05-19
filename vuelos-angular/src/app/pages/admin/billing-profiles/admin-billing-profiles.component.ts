@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminTableComponent } from '../../../shared/components/admin-table/admin-table.component';
@@ -67,3 +67,4 @@ export class AdminBillingProfilesComponent implements OnInit {
     obs.subscribe({ next: () => { this.modal.set(false); this.saving.set(false); this.load(); }, error: (err: any) => { console.error(err); this.saving.set(false); } }); }
   del(id: string) { this.svc.deleteBillingProfile(id).subscribe(() => this.load()); }
 }
+

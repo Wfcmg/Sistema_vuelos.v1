@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminTableComponent } from '../../../shared/components/admin-table/admin-table.component';
@@ -24,3 +24,4 @@ export class AdminAuditComponent implements OnInit {
   ngOnInit() { this.load(); }
   load() { this.svc.getAuditLogs().subscribe({ next: (d: any) => { this.rows.set(d); this.loading.set(false); }, error: () => this.loading.set(false) }); }
 }
+
