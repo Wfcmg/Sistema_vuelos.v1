@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { registry } from '../config/registry.js';
 import { CircuitBreaker } from '../middleware/circuitBreaker.js';
@@ -26,6 +26,13 @@ export function createProxyRouter(): Router {
       pathRewrite: (_path, req) => (req as any).originalUrl,
 
       on: {
+        proxyReq: (proxyReq: any) => {
+          // El navegador ya valida CORS contra el API Gateway.
+          // Los microservicios internos no necesitan recibir el Origin del frontend.
+          proxyReq.removeHeader('origin');
+          proxyReq.removeHeader('referer');
+        },
+
         error: (err: Error, _req: any, res: any) => {
           breaker.recordFailure();
           console.error(`[gateway] Error proxying to ${svc.name}: ${err.message}`);
@@ -60,3 +67,4 @@ export function getCircuitBreakerStatus() {
   }
   return status;
 }
+
