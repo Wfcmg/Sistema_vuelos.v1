@@ -209,7 +209,58 @@ app.get([
     });
   }
 });
+app.get([
+  '/api/v1/William-Carrion-Booking/flights',
+  '/api/v1/William-Carrión-Booking/flights',
+  '/api/v1/william-carrion-booking/flights'
+], async (_req, res) => {
+  try {
+    const result = await bookingFetchJson(`${services.flights}/api/v1/flights`);
 
+    const data = (result.data ?? []).map((flight: any) => ({
+      flightId: flight.id,
+      flightNumber: flight.flightNumber,
+      origin: flight.originAirportIata,
+      destination: flight.destinationAirportIata,
+      departureDate: flight.departureDate,
+      departureDateTime: flight.departureDateTime,
+      arrivalDateTime: flight.arrivalDateTime,
+      status: flight.status,
+      duration: flight.duration,
+      stops: flight.stops,
+      lowestPrice: flight.lowestPrice,
+      airline: flight.airline?.name ?? null,
+      aircraft: flight.aircraft ?? null,
+      route: flight.route ?? null,
+      classes: (flight.flightClasses ?? []).map((fc: any) => ({
+        flightClassId: fc.id,
+        cabinClass: fc.classType ?? fc.cabinClass,
+        availableSeats: fc.availableSeats,
+        basePrice: fc.basePrice
+      }))
+    }));
+
+    res.status(200).json({
+      success: true,
+      owner: 'William Carrion',
+      api: 'William Carrion Booking API',
+      version: 'v1',
+      module: 'booking',
+      visibility: 'public',
+      auth: 'none',
+      data
+    });
+  } catch (err: any) {
+    res.status(err.status ?? 502).json({
+      success: false,
+      error: {
+        code: 'BOOKING_FLIGHTS_LIST_ERROR',
+        message: 'No se pudieron obtener todos los vuelos para Booking',
+        details: err.body ?? null
+      }
+    });
+  }
+});
 app.get([
   '/api/v1/William-Carrion-Booking/flights/search',
   '/api/v1/William-Carrión-Booking/flights/search',
