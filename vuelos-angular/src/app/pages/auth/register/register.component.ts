@@ -1,8 +1,11 @@
-﻿import { Component, inject, signal } from '@angular/core';
+﻿import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import type { City } from '../../../core/models/domain';
 
 @Component({
   selector: 'app-register',
@@ -66,7 +69,19 @@ import { AuthService } from '../../../core/services/auth.service';
               <input formControlName="mainAddress" placeholder="Av. Principal 123"
                 class="w-full px-3 py-2.5 border border-white/15 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" />
             </div>
-
+            <div>
+              <label class="block text-sm font-medium text-slate-200 mb-1.5">Ciudad *</label>
+              <select formControlName="cityId"
+                class="w-full px-3 py-2.5 border border-white/15 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none bg-[#111827] text-white">
+                <option value="">Seleccione una ciudad</option>
+                <option *ngFor="let c of cities()" [value]="c.id">
+                  {{ c.name }}{{ c.country ? ' · ' + c.country.name : '' }}
+                </option>
+              </select>
+              <p *ngIf="form.get('cityId')?.touched && form.get('cityId')?.invalid" class="text-xs text-red-500 mt-1">
+                Seleccione una ciudad
+              </p>
+            </div>
             <div>
               <label class="block text-sm font-medium text-slate-200 mb-1.5">Teléfono</label>
               <input formControlName="phone" placeholder="+593..."
@@ -102,10 +117,39 @@ import { AuthService } from '../../../core/services/auth.service';
     </div>
   `,
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   private svc    = inject(AuthService);
   private router = inject(Router);
   private fb     = inject(FormBuilder);
+
+  private http = inject(HttpClient);
+
+  cities = signal<City[]>([]);
+  citiesLoading = signal(false);
+
+  ngOnInit() {
+    this.loadCities();
+  }
+
+  private loadCities() {
+    this.citiesLoading.set(true);
+
+    this.http.get<any>(`${environment.apiUrl}/cities`).subscribe({
+      next: (res) => {
+        const data = Array.isArray(res?.data) ? res.data : [];
+        const ordered = data.sort((a: City, b: City) =>
+          a.name.localeCompare(b.name, 'es')
+        );
+
+        this.cities.set(ordered);
+        this.citiesLoading.set(false);
+      },
+      error: () => {
+        this.errorMsg.set('No se pudieron cargar las ciudades.');
+        this.citiesLoading.set(false);
+      }
+    });
+  }
 
   loading  = signal(false);
   errorMsg = signal<string | null>(null);
@@ -118,6 +162,7 @@ export class RegisterComponent {
     email:           ['', [Validators.required, Validators.email]],
     mainAddress:     [''],
     phone:           [''],
+    cityId:          ['', Validators.required],
     password:        ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', Validators.required],
   }, {
