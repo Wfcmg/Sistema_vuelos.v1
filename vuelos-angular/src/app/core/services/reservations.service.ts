@@ -5,6 +5,7 @@ import type { ApiSuccess, Reservation } from '../models/domain';
 const BASE = environment.apiUrl;
 
 export interface CreateReservationPayload {
+  userId?: string;
   flightClassId: string;
   passengers: { firstName: string; lastName: string; documentNumber: string; seatNumber?: string }[];
   promotionCode?: string;

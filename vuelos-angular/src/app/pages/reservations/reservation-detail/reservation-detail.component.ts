@@ -2,13 +2,14 @@
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FlightsService } from '../../../core/services/flights.service';
 import { ReservationsService } from '../../../core/services/reservations.service';
 import { BoardingPassesService } from '../../../core/services/boarding-passes.service';
 import { PassengerServicesService } from '../../../core/services/passenger-services.service';
 import { AirlineServiceConfigsService } from '../../../core/services/airline-service-configs.service';
 import { PaymentsService } from '../../../core/services/payments.service';
 import { InvoicesService } from '../../../core/services/invoices.service';
-import type { Reservation, Passenger, BoardingPass, PassengerService, AirlineServiceConfig, Payment, Invoice } from '../../../core/models/domain';
+import type { Reservation, Passenger, BoardingPass, PassengerService, AirlineServiceConfig, Payment, Invoice, Flight } from '../../../core/models/domain';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -86,14 +87,19 @@ interface PassengerState {
 
         <!-- Vuelo -->
         <div class="bg-[#0B1020] rounded-xl border border-white/10 p-5">
-          <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 15.5L21 4.5L14.5 20L11 13L3 15.5ZM11 13L21 4.5"/></svg>
-            <p class="font-semibold text-slate-100">{{ r.flight?.airline?.name ?? 'Aerolínea' }}</p>
+          <div class="flex items-start gap-2 mb-4">
+            <svg class="w-4 h-4 text-amber-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M3 15.5L21 4.5L14.5 20L11 13L3 15.5ZM11 13L21 4.5"/>
+            </svg>
+            <div>
+              <p class="font-semibold text-slate-100">{{ r.flight?.airline?.name ?? 'AeroWilly' }}</p>
+              <p class="text-xs text-slate-500 mt-1">Vuelo: {{ r.flightId }}</p>
+            </div>
           </div>
           <div class="flex items-center gap-4">
             <div>
               <p class="text-3xl font-bold text-white">{{ depTime(r) }}</p>
-              <p class="text-xs font-bold text-slate-400">{{ r.flight?.route?.originAirport?.iataCode ?? r.flight?.originAirportIata }}</p>
+              <p class="text-xs font-bold text-slate-400">{{ r.flight?.route?.originAirport?.iataCode ?? r.flight?.originAirportIata ?? 'Origen' }}</p>
             </div>
             <div class="flex-1 flex items-center gap-1">
               <div class="flex-1 h-px bg-[#1F2937]"></div>
@@ -101,7 +107,7 @@ interface PassengerState {
             </div>
             <div class="text-right">
               <p class="text-3xl font-bold text-white">{{ arrTime(r) }}</p>
-              <p class="text-xs font-bold text-slate-400">{{ r.flight?.route?.destinationAirport?.iataCode ?? r.flight?.destinationAirportIata }}</p>
+              <p class="text-xs font-bold text-slate-400">{{ r.flight?.route?.destinationAirport?.iataCode ?? r.flight?.destinationAirportIata ?? 'Destino' }}</p>
             </div>
           </div>
         </div>
@@ -548,6 +554,7 @@ export class ReservationDetailComponent implements OnInit {
   route  = inject(ActivatedRoute);
   router = inject(Router);
   private resSvc     = inject(ReservationsService);
+  private flightsSvc = inject(FlightsService);
   private bpSvc      = inject(BoardingPassesService);
   private psSvc      = inject(PassengerServicesService);
   private ascSvc     = inject(AirlineServiceConfigsService);
@@ -596,6 +603,21 @@ export class ReservationDetailComponent implements OnInit {
       next: res => {
         this.reservation.set(res.data);
         this.loading.set(false);
+
+        if (res.data.flightId) {
+          this.flightsSvc.getById(res.data.flightId).subscribe({
+            next: flightRes => {
+              const current = this.reservation();
+              if (current) {
+                this.reservation.set({
+                  ...current,
+                  flight: flightRes.data as Flight,
+                } as Reservation);
+              }
+            },
+            error: () => {},
+          });
+        }
         const passengers = res.data.passengers ?? [];
         this.passengerStates.set(passengers.map(p => ({
           passenger: p, expanded: false, boardingPasses: [], passengerServices: [],
@@ -921,8 +943,10 @@ export class ReservationDetailComponent implements OnInit {
 
   seatFeesTotal() {
     return this.passengerStates().reduce((total, ps) => {
-      const activeSeat = ps.passenger.seatNumber || ps.seatInput;
-      return total + this.seatPrice(activeSeat);
+      // Si el asiento ya viene guardado desde la compra, NO se cobra como extra pendiente.
+      // Solo cobramos si el usuario está eligiendo/cambiando un asiento nuevo en esta pantalla.
+      const newSeatSelectedInDetail = ps.seatInput;
+      return total + this.seatPrice(newSeatSelectedInDetail);
     }, 0);
   }
 
@@ -952,7 +976,7 @@ export class ReservationDetailComponent implements OnInit {
         });
       });
 
-      const activeSeat = ps.passenger.seatNumber || ps.seatInput;
+      const activeSeat = ps.seatInput;
       const seatAmount = this.seatPrice(activeSeat);
       if (activeSeat && seatAmount > 0) {
         items.push({
