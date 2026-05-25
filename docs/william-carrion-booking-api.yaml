@@ -1,16 +1,22 @@
 ﻿openapi: 3.0.3
 info:
   title: William Carrion Booking API
-  version: 1.1.0
-  description: Contrato publico para que Booking consulte aeropuertos, vuelos, asientos ocupados, cree reservas, cancele reservas y asigne asientos desde el modulo de vuelos de William Carrion. Las rutas de este contrato son publicas y no requieren JWT.
+  version: 1.2.0
+  description: >
+    Contrato publico para integracion con Booking. Permite consultar estado de la API,
+    aeropuertos, vuelos, detalle de vuelo, asientos ocupados, crear reservas,
+    cancelar reservas y asignar asientos. Todas las rutas de este contrato son publicas
+    y no requieren JWT ni Bearer Token.
+
 servers:
   - url: https://vuelos-api-gateway-wc.onrender.com/api/v1/william-carrion-booking
     description: API Gateway publico desplegado en Render
+
 security: []
 
 tags:
   - name: Booking Public
-    description: Endpoints publicos para integracion con Booking
+    description: Endpoints publicos para integracion con Booking.
 
 paths:
   /:
@@ -19,7 +25,7 @@ paths:
         - Booking Public
       operationId: getBookingApiStatus
       summary: Estado de la API publica de Booking
-      description: Devuelve informacion general de la API publica de vuelos para Booking.
+      description: Devuelve informacion general de la API publica de Booking.
       security: []
       responses:
         '200':
@@ -28,6 +34,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiStatusResponse'
+              example:
+                success: true
+                owner: William Carrion
+                project: booking
+                route: /api/v1/william-carrion-booking
+                visibility: public
+                message: Ruta publica exclusiva de Booking activa desde el API Gateway
+                gateway: api-gateway
+                status: online
+                version: 2.0.0
+                timestamp: 2026-05-25T03:21:20.548Z
 
   /airports:
     get:
@@ -35,7 +52,7 @@ paths:
         - Booking Public
       operationId: listBookingAirports
       summary: Listar aeropuertos disponibles para Booking
-      description: Devuelve los aeropuertos disponibles con codigo IATA, ciudad, pais y zona horaria.
+      description: Devuelve aeropuertos disponibles con codigo IATA, ciudad, pais y zona horaria.
       security: []
       responses:
         '200':
@@ -65,7 +82,7 @@ paths:
       tags:
         - Booking Public
       operationId: listBookingFlights
-      summary: Listar todos los vuelos disponibles para Booking
+      summary: Listar vuelos disponibles para Booking
       description: Devuelve todos los vuelos disponibles con clases, precios, ruta y datos principales.
       security: []
       responses:
@@ -74,7 +91,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightsSearchResponse'
+                $ref: '#/components/schemas/FlightsResponse'
               example:
                 success: true
                 owner: William Carrion
@@ -100,8 +117,12 @@ paths:
                     classes:
                       - flightClassId: fc-economy-001
                         cabinClass: ECONOMY
-                        availableSeats: 117
+                        availableSeats: 115
                         basePrice: 250
+                      - flightClassId: fc-business-001
+                        cabinClass: BUSINESS
+                        availableSeats: 20
+                        basePrice: 600
 
   /flights/search:
     get:
@@ -163,7 +184,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FlightsSearchResponse'
+                $ref: '#/components/schemas/FlightsResponse'
         '400':
           description: Parametros invalidos
           content:
@@ -183,7 +204,7 @@ paths:
         - Booking Public
       operationId: getBookingFlightDetail
       summary: Obtener detalle de un vuelo
-      description: Devuelve informacion detallada de un vuelo especifico, incluyendo tramos, ruta y clases disponibles.
+      description: Devuelve informacion detallada de un vuelo especifico.
       security: []
       parameters:
         - name: flightId
@@ -247,6 +268,8 @@ paths:
                 feature: occupied-seats
                 data:
                   - 12A
+                  - 18A
+                  - 19A
         '502':
           description: Error al consultar asientos ocupados
           content:
@@ -259,8 +282,10 @@ paths:
       tags:
         - Booking Public
       operationId: createBookingReservation
-      summary: Crear una reserva publica para Booking
-      description: Crea una reserva con pasajeros y asiento seleccionado. No requiere JWT. El campo userId se envia en el body para identificar al usuario.
+      summary: Crear reserva publica para Booking
+      description: >
+        Crea una reserva con pasajeros y asiento seleccionado. No requiere JWT.
+        El campo userId debe enviarse en el body para identificar al usuario que realiza la reserva.
       security: []
       requestBody:
         required: true
@@ -272,10 +297,10 @@ paths:
               userId: usr-test-william-001
               flightClassId: fc-economy-001
               passengers:
-                - firstName: Booking
-                  lastName: Publico
-                  documentNumber: DOC123456
-                  seatNumber: 14A
+                - firstName: Postman
+                  lastName: Prueba
+                  documentNumber: DOC999777
+                  seatNumber: 21A
       responses:
         '201':
           description: Reserva creada correctamente
@@ -283,6 +308,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReservationResponse'
+              example:
+                success: true
+                owner: William Carrion
+                api: William Carrion Booking API
+                version: v1
+                module: booking
+                visibility: public-contract
+                auth: none
+                feature: create-reservation
+                data:
+                  id: cmpknaxb000ksi0oe7f5u1fi
+                  userId: usr-test-william-001
+                  flightId: flight-uio-lim-scl-001
+                  promotionId: null
+                  reservationCode: 49C3E2FF
+                  totalAmount: '250'
+                  status: CONFIRMED
+                  createdAt: 2026-05-25T03:27:13.403Z
+                  passengers:
+                    - id: cmpknaxb000lsi0ou7tyho3
+                      reservationId: cmpknaxb000ksi0oe7f5u1fi
+                      flightClassId: fc-economy-001
+                      firstName: Postman
+                      lastName: Prueba
+                      documentNumber: DOC999777
+                      seatNumber: 21A
+                  promotion: null
         '400':
           description: Datos invalidos o userId faltante
           content:
@@ -307,17 +359,20 @@ paths:
       tags:
         - Booking Public
       operationId: cancelBookingReservation
-      summary: Cancelar una reserva publica para Booking
-      description: Cancela una reserva existente. No requiere JWT. El campo userId se envia en el body para validar la reserva del usuario.
+      summary: Cancelar reserva publica para Booking
+      description: >
+        Cancela una reserva existente. No requiere JWT. El campo userId debe enviarse
+        en el body para validar la reserva del usuario. Importante: reservationId es el campo data.id
+        devuelto al crear la reserva, no el reservationCode.
       security: []
       parameters:
         - name: reservationId
           in: path
           required: true
-          description: Identificador unico de la reserva.
+          description: ID unico de la reserva. Usar data.id devuelto por POST /reservations.
           schema:
             type: string
-            example: cmplvi7s0002qogl28a6i157
+            example: cmpknaxb000ksi0oe7f5u1fi
       requestBody:
         required: true
         content:
@@ -333,6 +388,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CancelReservationResponse'
+              example:
+                success: true
+                owner: William Carrion
+                api: William Carrion Booking API
+                version: v1
+                module: booking
+                visibility: public-contract
+                auth: none
+                feature: cancel-reservation
+                data:
+                  cancelled: true
+                  reservationCode: 49C3E2FF
         '400':
           description: Datos invalidos o userId faltante
           content:
@@ -340,7 +407,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Reserva no encontrada
+          description: Reserva no encontrada. Revisar que se este enviando data.id y no reservationCode.
           content:
             application/json:
               schema:
@@ -357,24 +424,26 @@ paths:
       tags:
         - Booking Public
       operationId: setBookingReservationSeat
-      summary: Asignar asiento a un pasajero de una reserva
-      description: Asigna o actualiza el asiento de un pasajero dentro de una reserva. No requiere JWT. El campo userId se envia en el body para validar la reserva del usuario.
+      summary: Asignar asiento a pasajero
+      description: >
+        Asigna o actualiza el asiento de un pasajero dentro de una reserva.
+        No requiere JWT. El campo userId debe enviarse en el body para validar la reserva.
       security: []
       parameters:
         - name: reservationId
           in: path
           required: true
-          description: Identificador unico de la reserva.
+          description: ID unico de la reserva.
           schema:
             type: string
-            example: cmplvi7s0002qogl28a6i157
+            example: cmpknaxb000ksi0oe7f5u1fi
         - name: passengerId
           in: path
           required: true
-          description: Identificador unico del pasajero de la reserva.
+          description: ID unico del pasajero dentro de la reserva.
           schema:
             type: string
-            example: cmplvi7s0003qoglxon5zto
+            example: cmpknaxb000lsi0ou7tyho3
       requestBody:
         required: true
         content:
@@ -383,7 +452,7 @@ paths:
               $ref: '#/components/schemas/SetSeatRequest'
             example:
               userId: usr-test-william-001
-              seatNumber: 15A
+              seatNumber: 22A
       responses:
         '200':
           description: Asiento asignado correctamente
@@ -397,8 +466,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Usuario sin permisos para modificar esta reserva
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Reserva o pasajero no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: El asiento ya esta ocupado
+          description: Asiento ocupado
           content:
             application/json:
               schema:
@@ -437,6 +518,7 @@ components:
           example: public
         message:
           type: string
+          example: Ruta publica exclusiva de Booking activa desde el API Gateway
         gateway:
           type: string
           example: api-gateway
@@ -446,29 +528,44 @@ components:
         version:
           type: string
           example: 2.0.0
+        timestamp:
+          type: string
+          format: date-time
 
-    AirportsResponse:
+    BasePublicResponse:
       type: object
       properties:
         success:
           type: boolean
+          example: true
         owner:
           type: string
+          example: William Carrion
         api:
           type: string
+          example: William Carrion Booking API
         version:
           type: string
+          example: v1
         module:
           type: string
+          example: booking
         visibility:
           type: string
+          example: public
         auth:
           type: string
           example: none
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Airport'
+
+    AirportsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Airport'
 
     Airport:
       type: object
@@ -499,30 +596,17 @@ components:
           nullable: true
           example: America/Guayaquil
 
-    FlightsSearchResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        owner:
-          type: string
-        api:
-          type: string
-        version:
-          type: string
-        module:
-          type: string
-        visibility:
-          type: string
-        auth:
-          type: string
-          example: none
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/FlightSearchItem'
+    FlightsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlightItem'
 
-    FlightSearchItem:
+    FlightItem:
       type: object
       properties:
         flightId:
@@ -578,25 +662,12 @@ components:
             $ref: '#/components/schemas/FlightClass'
 
     FlightDetailResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        owner:
-          type: string
-        api:
-          type: string
-        version:
-          type: string
-        module:
-          type: string
-        visibility:
-          type: string
-        auth:
-          type: string
-          example: none
-        data:
-          $ref: '#/components/schemas/FlightDetail'
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/FlightDetail'
 
     FlightDetail:
       type: object
@@ -605,6 +676,9 @@ components:
         id:
           type: string
           example: flight-uio-lim-scl-001
+        flightNumber:
+          type: string
+          example: AV100-1
         originAirportIata:
           type: string
           example: UIO
@@ -614,6 +688,14 @@ components:
         departureDate:
           type: string
           format: date-time
+        departureDateTime:
+          type: string
+          format: date-time
+          nullable: true
+        arrivalDateTime:
+          type: string
+          format: date-time
+          nullable: true
         status:
           type: string
           example: SCHEDULED
@@ -626,17 +708,6 @@ components:
         lowestPrice:
           type: number
           example: 250
-        flightNumber:
-          type: string
-          example: AV100-1
-        departureDateTime:
-          type: string
-          format: date-time
-          nullable: true
-        arrivalDateTime:
-          type: string
-          format: date-time
-          nullable: true
         airline:
           nullable: true
         aircraft:
@@ -667,44 +738,27 @@ components:
           example: ECONOMY
         availableSeats:
           type: integer
-          example: 117
+          example: 115
         basePrice:
           type: number
           example: 250
 
     OccupiedSeatsResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        owner:
-          type: string
-          example: William Carrion
-        api:
-          type: string
-          example: William Carrion Booking API
-        version:
-          type: string
-          example: v1
-        module:
-          type: string
-          example: booking
-        visibility:
-          type: string
-          example: public
-        auth:
-          type: string
-          example: none
-        feature:
-          type: string
-          example: occupied-seats
-        data:
-          type: array
-          items:
-            type: string
-          example:
-            - 12A
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
+          properties:
+            feature:
+              type: string
+              example: occupied-seats
+            data:
+              type: array
+              items:
+                type: string
+              example:
+                - 12A
+                - 18A
+                - 19A
 
     CreateReservationRequest:
       type: object
@@ -741,17 +795,17 @@ components:
       properties:
         firstName:
           type: string
-          example: Booking
+          example: Postman
         lastName:
           type: string
-          example: Publico
+          example: Prueba
         documentNumber:
           type: string
-          example: DOC123456
+          example: DOC999777
         seatNumber:
           type: string
           nullable: true
-          example: 14A
+          example: 21A
 
     CancelReservationRequest:
       type: object
@@ -773,37 +827,21 @@ components:
           example: usr-test-william-001
         seatNumber:
           type: string
-          example: 15A
+          example: 22A
 
     ReservationResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        owner:
-          type: string
-          example: William Carrion
-        api:
-          type: string
-          example: William Carrion Booking API
-        version:
-          type: string
-          example: v1
-        module:
-          type: string
-          example: booking
-        visibility:
-          type: string
-          example: public-contract
-        auth:
-          type: string
-          example: none
-        feature:
-          type: string
-          example: create-reservation
-        data:
-          $ref: '#/components/schemas/Reservation'
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
+          properties:
+            visibility:
+              type: string
+              example: public-contract
+            feature:
+              type: string
+              example: create-reservation
+            data:
+              $ref: '#/components/schemas/Reservation'
 
     Reservation:
       type: object
@@ -811,7 +849,7 @@ components:
       properties:
         id:
           type: string
-          example: cmplvi7s0002qogl28a6i157
+          example: cmpknaxb000ksi0oe7f5u1fi
         userId:
           type: string
           example: usr-test-william-001
@@ -823,7 +861,7 @@ components:
           nullable: true
         reservationCode:
           type: string
-          example: EDC578E7
+          example: 49C3E2FF
         totalAmount:
           type: string
           example: '250'
@@ -845,93 +883,61 @@ components:
       properties:
         id:
           type: string
-          example: cmplvi7s0003qoglxon5zto
+          example: cmpknaxb000lsi0ou7tyho3
         reservationId:
           type: string
-          example: cmplvi7s0002qogl28a6i157
+          example: cmpknaxb000ksi0oe7f5u1fi
         flightClassId:
           type: string
           example: fc-economy-001
         firstName:
           type: string
-          example: Booking
+          example: Postman
         lastName:
           type: string
-          example: Publico
+          example: Prueba
         documentNumber:
           type: string
-          example: DOC123456
+          example: DOC999777
         seatNumber:
           type: string
           nullable: true
-          example: 14A
+          example: 21A
 
     CancelReservationResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        owner:
-          type: string
-          example: William Carrion
-        api:
-          type: string
-          example: William Carrion Booking API
-        version:
-          type: string
-          example: v1
-        module:
-          type: string
-          example: booking
-        visibility:
-          type: string
-          example: public-contract
-        auth:
-          type: string
-          example: none
-        feature:
-          type: string
-          example: cancel-reservation
-        data:
-          type: object
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
           properties:
-            cancelled:
-              type: boolean
-              example: true
-            reservationCode:
+            visibility:
               type: string
-              example: EDC578E7
+              example: public-contract
+            feature:
+              type: string
+              example: cancel-reservation
+            data:
+              type: object
+              properties:
+                cancelled:
+                  type: boolean
+                  example: true
+                reservationCode:
+                  type: string
+                  example: 49C3E2FF
 
     SetSeatResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        owner:
-          type: string
-          example: William Carrion
-        api:
-          type: string
-          example: William Carrion Booking API
-        version:
-          type: string
-          example: v1
-        module:
-          type: string
-          example: booking
-        visibility:
-          type: string
-          example: public-contract
-        auth:
-          type: string
-          example: none
-        feature:
-          type: string
-          example: set-seat
-        data:
-          $ref: '#/components/schemas/ReservationPassenger'
+      allOf:
+        - $ref: '#/components/schemas/BasePublicResponse'
+        - type: object
+          properties:
+            visibility:
+              type: string
+              example: public-contract
+            feature:
+              type: string
+              example: set-seat
+            data:
+              $ref: '#/components/schemas/ReservationPassenger'
 
     ErrorResponse:
       type: object
@@ -946,7 +952,9 @@ components:
           properties:
             code:
               type: string
+              example: BOOKING_CREATE_RESERVATION_ERROR
             message:
               type: string
+              example: No se pudo crear la reserva para Booking
             details:
               nullable: true
