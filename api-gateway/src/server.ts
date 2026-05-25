@@ -449,7 +449,7 @@ app.post([
       version: 'v1',
       module: 'booking',
       visibility: 'public-contract',
-      auth: req.headers.authorization ? 'bearer-forwarded' : 'required-by-booking-service',
+      auth: 'none',
       feature: 'create-reservation',
       data: result.data ?? result
     });
@@ -487,7 +487,7 @@ app.patch([
       version: 'v1',
       module: 'booking',
       visibility: 'public-contract',
-      auth: req.headers.authorization ? 'bearer-forwarded' : 'required-by-booking-service',
+      auth: 'none',
       feature: 'cancel-reservation',
       data: result.data ?? result
     });
@@ -526,7 +526,7 @@ app.patch([
       version: 'v1',
       module: 'booking',
       visibility: 'public-contract',
-      auth: req.headers.authorization ? 'bearer-forwarded' : 'required-by-booking-service',
+      auth: 'none',
       feature: 'set-seat',
       data: result.data ?? result
     });
