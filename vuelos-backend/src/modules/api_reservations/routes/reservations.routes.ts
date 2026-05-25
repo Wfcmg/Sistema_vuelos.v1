@@ -13,10 +13,33 @@ function isUniqueSeatConflict(err: any) {
 
 export function createReservationRouter(controller: ReservationController, db: PrismaClient): Router {
   const router = Router();
-  router.post('/',             authenticate, validate(CreateReservationSchema), controller.create);
+  const publicBookingUser = (req: any, res: any, next: any) => {
+    const userId =
+      req.body?.userId ??
+      req.query?.userId ??
+      req.headers['x-user-id'];
+
+    if (!userId || typeof userId !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'PUBLIC_BOOKING_USER_REQUIRED',
+          message: 'Para reservar o cancelar desde Booking publico debe enviar userId en el body o x-user-id en headers.'
+        }
+      });
+    }
+
+    req.user = {
+      id: userId,
+      role: 'CUSTOMER'
+    };
+
+    next();
+  };
+  router.post('/',             publicBookingUser, validate(CreateReservationSchema), controller.create);
   router.get('/my',            authenticate, controller.myReservations);
   router.get('/',              authenticate, requireAdmin, controller.listAll);
-  router.get('/flight-classes/:flightClassId/occupied-seats', authenticate, async (req: any, res: any, next: any) => {
+  router.get('/flight-classes/:flightClassId/occupied-seats', async (req: any, res: any, next: any) => {
     try {
       const seats = await db.reservationPassenger.findMany({
         where: {
@@ -35,12 +58,12 @@ export function createReservationRouter(controller: ReservationController, db: P
     } catch (err) { next(err); }
   });
   router.get('/:id',           authenticate, controller.getById);
-  router.delete('/:id',        authenticate, controller.cancel);
+  router.delete('/:id',        publicBookingUser, controller.cancel);
   // Angular service calls PATCH /cancel — keep in sync with DELETE /:id
-  router.patch('/:id/cancel',  authenticate, controller.cancel);
+  router.patch('/:id/cancel',  publicBookingUser, controller.cancel);
 
   // ── Asignación de asiento durante check-in ───────────────────
-  router.patch('/:id/passengers/:passengerId/seat', authenticate, async (req: any, res: any, next: any) => {
+  router.patch('/:id/passengers/:passengerId/seat', publicBookingUser, async (req: any, res: any, next: any) => {
     try {
       const { id, passengerId } = req.params;
       const { seatNumber } = req.body;

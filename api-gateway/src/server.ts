@@ -346,6 +346,202 @@ app.get([
   }
 });
 
+// ============================================================
+// API_PUBLICA_BOOKING_RESERVAS_ASIENTOS
+// Endpoints publicos de contrato Booking para reservas.
+// Se colocan ANTES del proxy general para no romper rutas existentes.
+// IMPORTANTE:
+// - Consulta de asientos ocupados: no requiere token.
+// - Crear/cancelar/asignar asiento: reenvia Authorization si el integrador lo manda.
+// ============================================================
+
+async function bookingForwardJson(
+  url: string,
+  method: 'POST' | 'PATCH',
+  body: unknown,
+  authorization?: string
+) {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+
+  if (authorization) {
+    headers.Authorization = authorization;
+  }
+
+  const response = await fetch(url, {
+    method,
+    headers,
+    body: JSON.stringify(body ?? {})
+  });
+
+  const text = await response.text();
+  let responseBody: any = null;
+
+  try {
+    responseBody = text ? JSON.parse(text) : null;
+  } catch {
+    responseBody = { raw: text };
+  }
+
+  if (!response.ok) {
+    throw {
+      status: response.status,
+      body: responseBody
+    };
+  }
+
+  return responseBody;
+}
+
+app.get([
+  '/api/v1/William-Carrion-Booking/flight-classes/:flightClassId/occupied-seats',
+  '/api/v1/William-Carrión-Booking/flight-classes/:flightClassId/occupied-seats',
+  '/api/v1/william-carrion-booking/flight-classes/:flightClassId/occupied-seats'
+], async (req, res) => {
+  try {
+    const flightClassId = encodeURIComponent(String(req.params.flightClassId));
+
+    const result = await bookingFetchJson(
+      `${services.booking}/api/v1/reservations/flight-classes/${flightClassId}/occupied-seats`
+    );
+
+    res.status(200).json({
+      success: true,
+      owner: 'William Carrion',
+      api: 'William Carrion Booking API',
+      version: 'v1',
+      module: 'booking',
+      visibility: 'public',
+      auth: 'none',
+      feature: 'occupied-seats',
+      data: result.data ?? result
+    });
+  } catch (err: any) {
+    res.status(err.status ?? 502).json({
+      success: false,
+      error: {
+        code: 'BOOKING_OCCUPIED_SEATS_ERROR',
+        message: 'No se pudieron obtener los asientos ocupados para Booking',
+        details: err.body ?? null
+      }
+    });
+  }
+});
+
+app.post([
+  '/api/v1/William-Carrion-Booking/reservations',
+  '/api/v1/William-Carrión-Booking/reservations',
+  '/api/v1/william-carrion-booking/reservations'
+], express.json({ limit: '1mb' }), async (req, res) => {
+  try {
+    const result = await bookingForwardJson(
+      `${services.booking}/api/v1/reservations`,
+      'POST',
+      req.body,
+      req.headers.authorization
+    );
+
+    res.status(201).json({
+      success: true,
+      owner: 'William Carrion',
+      api: 'William Carrion Booking API',
+      version: 'v1',
+      module: 'booking',
+      visibility: 'public-contract',
+      auth: req.headers.authorization ? 'bearer-forwarded' : 'required-by-booking-service',
+      feature: 'create-reservation',
+      data: result.data ?? result
+    });
+  } catch (err: any) {
+    res.status(err.status ?? 502).json({
+      success: false,
+      error: {
+        code: 'BOOKING_CREATE_RESERVATION_ERROR',
+        message: 'No se pudo crear la reserva para Booking',
+        details: err.body ?? null
+      }
+    });
+  }
+});
+
+app.patch([
+  '/api/v1/William-Carrion-Booking/reservations/:id/cancel',
+  '/api/v1/William-Carrión-Booking/reservations/:id/cancel',
+  '/api/v1/william-carrion-booking/reservations/:id/cancel'
+], express.json({ limit: '1mb' }), async (req, res) => {
+  try {
+    const id = encodeURIComponent(String(req.params.id));
+
+    const result = await bookingForwardJson(
+      `${services.booking}/api/v1/reservations/${id}/cancel`,
+      'PATCH',
+      req.body ?? {},
+      req.headers.authorization
+    );
+
+    res.status(200).json({
+      success: true,
+      owner: 'William Carrion',
+      api: 'William Carrion Booking API',
+      version: 'v1',
+      module: 'booking',
+      visibility: 'public-contract',
+      auth: req.headers.authorization ? 'bearer-forwarded' : 'required-by-booking-service',
+      feature: 'cancel-reservation',
+      data: result.data ?? result
+    });
+  } catch (err: any) {
+    res.status(err.status ?? 502).json({
+      success: false,
+      error: {
+        code: 'BOOKING_CANCEL_RESERVATION_ERROR',
+        message: 'No se pudo cancelar la reserva para Booking',
+        details: err.body ?? null
+      }
+    });
+  }
+});
+
+app.patch([
+  '/api/v1/William-Carrion-Booking/reservations/:reservationId/passengers/:passengerId/seat',
+  '/api/v1/William-Carrión-Booking/reservations/:reservationId/passengers/:passengerId/seat',
+  '/api/v1/william-carrion-booking/reservations/:reservationId/passengers/:passengerId/seat'
+], express.json({ limit: '1mb' }), async (req, res) => {
+  try {
+    const reservationId = encodeURIComponent(String(req.params.reservationId));
+    const passengerId = encodeURIComponent(String(req.params.passengerId));
+
+    const result = await bookingForwardJson(
+      `${services.booking}/api/v1/reservations/${reservationId}/passengers/${passengerId}/seat`,
+      'PATCH',
+      req.body,
+      req.headers.authorization
+    );
+
+    res.status(200).json({
+      success: true,
+      owner: 'William Carrion',
+      api: 'William Carrion Booking API',
+      version: 'v1',
+      module: 'booking',
+      visibility: 'public-contract',
+      auth: req.headers.authorization ? 'bearer-forwarded' : 'required-by-booking-service',
+      feature: 'set-seat',
+      data: result.data ?? result
+    });
+  } catch (err: any) {
+    res.status(err.status ?? 502).json({
+      success: false,
+      error: {
+        code: 'BOOKING_SET_SEAT_ERROR',
+        message: 'No se pudo asignar el asiento para Booking',
+        details: err.body ?? null
+      }
+    });
+  }
+});
+
 app.use(createProxyRouter());
 
 // ── 404 ─────────────────────────────────────────────────────
