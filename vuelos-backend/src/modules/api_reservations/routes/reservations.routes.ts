@@ -13,21 +13,16 @@ function isUniqueSeatConflict(err: any) {
 
 export function createReservationRouter(controller: ReservationController, db: PrismaClient): Router {
   const router = Router();
-  const publicBookingUser = (req: any, res: any, next: any) => {
+  const publicBookingUser = (req: any, _res: any, next: any) => {
+    const headerUserId = Array.isArray(req.headers['x-user-id'])
+      ? req.headers['x-user-id'][0]
+      : req.headers['x-user-id'];
+
     const userId =
       req.body?.userId ??
       req.query?.userId ??
-      req.headers['x-user-id'];
-
-    if (!userId || typeof userId !== 'string') {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'PUBLIC_BOOKING_USER_REQUIRED',
-          message: 'Para reservar o cancelar desde Booking publico debe enviar userId en el body o x-user-id en headers.'
-        }
-      });
-    }
+      headerUserId ??
+      null;
 
     req.user = {
       id: userId,
@@ -37,6 +32,7 @@ export function createReservationRouter(controller: ReservationController, db: P
     next();
   };
   router.post('/',             publicBookingUser, validate(CreateReservationSchema), controller.create);
+  router.post('/checkout', publicBookingUser, validate(CreateReservationSchema), controller.create);
   router.get('/my',            authenticate, controller.myReservations);
   router.get('/',              authenticate, requireAdmin, controller.listAll);
   router.get('/flight-classes/:flightClassId/occupied-seats', async (req: any, res: any, next: any) => {

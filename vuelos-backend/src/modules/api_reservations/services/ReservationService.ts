@@ -21,7 +21,7 @@ export class ReservationService implements IReservationService {
     return randomBytes(4).toString('hex').toUpperCase();
   }
 
-  async create(userId: string, dto: CreateReservationDto) {
+  async create(userId: string | null, dto: CreateReservationDto) {
     if (!dto.flightClassId || !dto.passengers?.length) {
       throw new ValidationException('flightClassId y al menos un pasajero son requeridos');
     }

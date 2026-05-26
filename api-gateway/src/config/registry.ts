@@ -47,6 +47,7 @@ export const registry: ServiceConfig[] = [
       '/api/v1/billing-profiles',
       '/api/v1/boarding-passes',
       '/api/reservations',
+      '/api/v1/reservas',
     ],
   },
   {

@@ -37,7 +37,7 @@ enum CheckInStatus {
 
 model Reservation {
   id              String            @id @default(cuid())
-  userId          String            @map("user_id")
+  userId          String?           @map("user_id")
   flightId        String            @map("flight_id")
   promotionId     String?           @map("promotion_id")
   reservationCode String            @unique @map("reservation_code")

@@ -11,7 +11,7 @@ export interface CreateReservationDto {
 }
 
 export interface IReservationService {
-  create(userId: string, dto: CreateReservationDto): Promise<any>;
+  create(userId: string | null, dto: CreateReservationDto): Promise<any>;
   getMyReservations(userId: string): Promise<any[]>;
   getById(id: string, requestingUserId: string, isAdmin: boolean): Promise<any>;
   cancel(id: string, requestingUserId: string, isAdmin: boolean): Promise<any>;

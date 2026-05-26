@@ -7,7 +7,17 @@ export class ReservationController {
 
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data = await this.reservationService.create(req.user!.id, req.body);
+      const headerUserId = Array.isArray(req.headers['x-user-id'])
+        ? req.headers['x-user-id'][0]
+        : req.headers['x-user-id'];
+
+      const publicUserId =
+        (req as any).user?.id ??
+        (req.body as any)?.userId ??
+        headerUserId ??
+        null;
+
+      const data = await this.reservationService.create(publicUserId, req.body);
       res.status(201).json({ success: true, data });
     } catch (err: any) {
       if (err.message === 'NO_AVAILABILITY') {

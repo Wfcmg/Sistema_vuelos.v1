@@ -1517,7 +1517,7 @@ export namespace Prisma {
 
   export type ReservationGroupByOutputType = {
     id: string
-    userId: string
+    userId: string | null
     flightId: string
     promotionId: string | null
     reservationCode: string
@@ -1599,7 +1599,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: string
+      userId: string | null
       flightId: string
       promotionId: string | null
       reservationCode: string
@@ -6572,7 +6572,7 @@ export namespace Prisma {
     OR?: ReservationWhereInput[]
     NOT?: ReservationWhereInput | ReservationWhereInput[]
     id?: StringFilter<"Reservation"> | string
-    userId?: StringFilter<"Reservation"> | string
+    userId?: StringNullableFilter<"Reservation"> | string | null
     flightId?: StringFilter<"Reservation"> | string
     promotionId?: StringNullableFilter<"Reservation"> | string | null
     reservationCode?: StringFilter<"Reservation"> | string
@@ -6585,7 +6585,7 @@ export namespace Prisma {
 
   export type ReservationOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
+    userId?: SortOrderInput | SortOrder
     flightId?: SortOrder
     promotionId?: SortOrderInput | SortOrder
     reservationCode?: SortOrder
@@ -6602,7 +6602,7 @@ export namespace Prisma {
     AND?: ReservationWhereInput | ReservationWhereInput[]
     OR?: ReservationWhereInput[]
     NOT?: ReservationWhereInput | ReservationWhereInput[]
-    userId?: StringFilter<"Reservation"> | string
+    userId?: StringNullableFilter<"Reservation"> | string | null
     flightId?: StringFilter<"Reservation"> | string
     promotionId?: StringNullableFilter<"Reservation"> | string | null
     totalAmount?: DecimalFilter<"Reservation"> | Decimal | DecimalJsLike | number | string
@@ -6614,7 +6614,7 @@ export namespace Prisma {
 
   export type ReservationOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
+    userId?: SortOrderInput | SortOrder
     flightId?: SortOrder
     promotionId?: SortOrderInput | SortOrder
     reservationCode?: SortOrder
@@ -6633,7 +6633,7 @@ export namespace Prisma {
     OR?: ReservationScalarWhereWithAggregatesInput[]
     NOT?: ReservationScalarWhereWithAggregatesInput | ReservationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Reservation"> | string
-    userId?: StringWithAggregatesFilter<"Reservation"> | string
+    userId?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     flightId?: StringWithAggregatesFilter<"Reservation"> | string
     promotionId?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     reservationCode?: StringWithAggregatesFilter<"Reservation"> | string
@@ -6910,7 +6910,7 @@ export namespace Prisma {
 
   export type ReservationCreateInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     reservationCode: string
     totalAmount: Decimal | DecimalJsLike | number | string
@@ -6922,7 +6922,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedCreateInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     promotionId?: string | null
     reservationCode: string
@@ -6934,7 +6934,7 @@ export namespace Prisma {
 
   export type ReservationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     reservationCode?: StringFieldUpdateOperationsInput | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -6946,7 +6946,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     promotionId?: NullableStringFieldUpdateOperationsInput | string | null
     reservationCode?: StringFieldUpdateOperationsInput | string
@@ -6958,7 +6958,7 @@ export namespace Prisma {
 
   export type ReservationCreateManyInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     promotionId?: string | null
     reservationCode: string
@@ -6969,7 +6969,7 @@ export namespace Prisma {
 
   export type ReservationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     reservationCode?: StringFieldUpdateOperationsInput | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -6979,7 +6979,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     promotionId?: NullableStringFieldUpdateOperationsInput | string | null
     reservationCode?: StringFieldUpdateOperationsInput | string
@@ -7800,6 +7800,10 @@ export namespace Prisma {
     set?: string
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type DecimalFieldUpdateOperationsInput = {
     set?: Decimal | DecimalJsLike | number | string
     increment?: Decimal | DecimalJsLike | number | string
@@ -7838,10 +7842,6 @@ export namespace Prisma {
     update?: ReservationPassengerUpdateWithWhereUniqueWithoutReservationInput | ReservationPassengerUpdateWithWhereUniqueWithoutReservationInput[]
     updateMany?: ReservationPassengerUpdateManyWithWhereWithoutReservationInput | ReservationPassengerUpdateManyWithWhereWithoutReservationInput[]
     deleteMany?: ReservationPassengerScalarWhereInput | ReservationPassengerScalarWhereInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type ReservationPassengerUncheckedUpdateManyWithoutReservationNestedInput = {
@@ -8456,7 +8456,7 @@ export namespace Prisma {
 
   export type ReservationCreateWithoutPassengersInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     reservationCode: string
     totalAmount: Decimal | DecimalJsLike | number | string
@@ -8467,7 +8467,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedCreateWithoutPassengersInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     promotionId?: string | null
     reservationCode: string
@@ -8548,7 +8548,7 @@ export namespace Prisma {
 
   export type ReservationUpdateWithoutPassengersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     reservationCode?: StringFieldUpdateOperationsInput | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -8559,7 +8559,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedUpdateWithoutPassengersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     promotionId?: NullableStringFieldUpdateOperationsInput | string | null
     reservationCode?: StringFieldUpdateOperationsInput | string
@@ -8687,7 +8687,7 @@ export namespace Prisma {
 
   export type ReservationCreateWithoutPromotionInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     reservationCode: string
     totalAmount: Decimal | DecimalJsLike | number | string
@@ -8698,7 +8698,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedCreateWithoutPromotionInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     reservationCode: string
     totalAmount: Decimal | DecimalJsLike | number | string
@@ -8738,7 +8738,7 @@ export namespace Prisma {
     OR?: ReservationScalarWhereInput[]
     NOT?: ReservationScalarWhereInput | ReservationScalarWhereInput[]
     id?: StringFilter<"Reservation"> | string
-    userId?: StringFilter<"Reservation"> | string
+    userId?: StringNullableFilter<"Reservation"> | string | null
     flightId?: StringFilter<"Reservation"> | string
     promotionId?: StringNullableFilter<"Reservation"> | string | null
     reservationCode?: StringFilter<"Reservation"> | string
@@ -8917,7 +8917,7 @@ export namespace Prisma {
 
   export type ReservationCreateManyPromotionInput = {
     id?: string
-    userId: string
+    userId?: string | null
     flightId: string
     reservationCode: string
     totalAmount: Decimal | DecimalJsLike | number | string
@@ -8927,7 +8927,7 @@ export namespace Prisma {
 
   export type ReservationUpdateWithoutPromotionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     reservationCode?: StringFieldUpdateOperationsInput | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -8938,7 +8938,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedUpdateWithoutPromotionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     reservationCode?: StringFieldUpdateOperationsInput | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -8949,7 +8949,7 @@ export namespace Prisma {
 
   export type ReservationUncheckedUpdateManyWithoutPromotionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
     flightId?: StringFieldUpdateOperationsInput | string
     reservationCode?: StringFieldUpdateOperationsInput | string
     totalAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string

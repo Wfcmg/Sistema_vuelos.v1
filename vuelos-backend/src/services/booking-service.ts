@@ -85,6 +85,7 @@ app.get(['/health', '/'], (_req, res) => {
 
 app.use('/api/v1/reservations',          createReservationRouter(reservationController, prismaBooking));
 app.use('/api/v1/reservation-passengers', createReservationPassengerRouter(reservationPassengerController, prismaBooking));
+app.use('/api/v1/reservas', createReservationRouter(reservationController, prismaBooking));
 app.use('/api/v1/billing-profiles',      createBillingProfileRouter(billingProfileController, prismaPayments));
 app.use('/api/v1/boarding-passes',       createBoardingPassRouter(boardingPassController, prismaBooking));
 app.use('/api/reservations',             createReservationRouter(reservationController, prismaBooking));
