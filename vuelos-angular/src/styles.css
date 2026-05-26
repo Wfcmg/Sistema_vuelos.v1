@@ -48,3 +48,166 @@ input, select, textarea {
   border-radius: 999px;
 }
 
+/* ADMIN BLACK RED THEME - William */
+.admin-theme {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(185, 28, 28, 0.18), transparent 28%),
+    radial-gradient(circle at 85% 15%, rgba(127, 29, 29, 0.16), transparent 30%),
+    linear-gradient(135deg, #050505 0%, #090909 48%, #140607 100%) !important;
+  color: #f4f4f5 !important;
+}
+
+.admin-theme main {
+  background:
+    radial-gradient(circle at top left, rgba(220, 38, 38, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(127, 29, 29, 0.14), transparent 32%),
+    #050505 !important;
+}
+
+/* Fondos claros heredados de Tailwind dentro del admin */
+.admin-theme .bg-white,
+.admin-theme .bg-gray-50,
+.admin-theme .bg-gray-100,
+.admin-theme .bg-slate-50,
+.admin-theme .bg-blue-50,
+.admin-theme .bg-green-50,
+.admin-theme .bg-purple-50,
+.admin-theme .bg-yellow-50,
+.admin-theme .bg-orange-50,
+.admin-theme .bg-pink-50 {
+  background-color: #0B0B0D !important;
+}
+
+/* Colores de acción a rojo */
+.admin-theme .bg-blue-600,
+.admin-theme .bg-blue-700,
+.admin-theme .bg-green-600,
+.admin-theme .bg-purple-600,
+.admin-theme .bg-yellow-600,
+.admin-theme .bg-orange-600,
+.admin-theme .bg-pink-600 {
+  background-color: #B91C1C !important;
+}
+
+.admin-theme .hover\:bg-blue-700:hover,
+.admin-theme .hover\:bg-blue-600:hover,
+.admin-theme .hover\:bg-green-700:hover,
+.admin-theme .hover\:bg-purple-700:hover,
+.admin-theme .hover\:bg-yellow-700:hover,
+.admin-theme .hover\:bg-orange-700:hover,
+.admin-theme .hover\:bg-pink-700:hover {
+  background-color: #DC2626 !important;
+}
+
+/* Bordes claros a rojo oscuro */
+.admin-theme .border-gray-100,
+.admin-theme .border-gray-200,
+.admin-theme .border-gray-300,
+.admin-theme .border-blue-100,
+.admin-theme .border-blue-200,
+.admin-theme .border-green-200,
+.admin-theme .border-purple-200,
+.admin-theme .border-yellow-200,
+.admin-theme .border-orange-200,
+.admin-theme .border-pink-200 {
+  border-color: rgba(127, 29, 29, 0.65) !important;
+}
+
+/* Textos grises/colores viejos a escala oscura legible */
+.admin-theme .text-gray-900,
+.admin-theme .text-slate-900 {
+  color: #ffffff !important;
+}
+
+.admin-theme .text-gray-800,
+.admin-theme .text-gray-700,
+.admin-theme .text-slate-800,
+.admin-theme .text-slate-700 {
+  color: #e4e4e7 !important;
+}
+
+.admin-theme .text-gray-600,
+.admin-theme .text-gray-500,
+.admin-theme .text-slate-600,
+.admin-theme .text-slate-500 {
+  color: #a1a1aa !important;
+}
+
+.admin-theme .text-blue-600,
+.admin-theme .text-blue-700,
+.admin-theme .text-green-600,
+.admin-theme .text-purple-600,
+.admin-theme .text-yellow-600,
+.admin-theme .text-orange-600,
+.admin-theme .text-pink-600 {
+  color: #f87171 !important;
+}
+
+/* Inputs, selects y textareas de todos los formularios admin */
+.admin-theme input,
+.admin-theme select,
+.admin-theme textarea {
+  background-color: #09090B !important;
+  border-color: rgba(127, 29, 29, 0.75) !important;
+  color: #f4f4f5 !important;
+  color-scheme: dark;
+}
+
+.admin-theme input::placeholder,
+.admin-theme textarea::placeholder {
+  color: #71717a !important;
+}
+
+.admin-theme input:focus,
+.admin-theme select:focus,
+.admin-theme textarea:focus {
+  border-color: #ef4444 !important;
+  --tw-ring-color: rgba(239, 68, 68, 0.45) !important;
+}
+
+.admin-theme option {
+  background-color: #09090B !important;
+  color: #f4f4f5 !important;
+}
+
+/* Checkboxes/radios */
+.admin-theme input[type="checkbox"],
+.admin-theme input[type="radio"] {
+  accent-color: #dc2626;
+}
+
+/* Tablas */
+.admin-theme table {
+  color: #e4e4e7 !important;
+}
+
+.admin-theme tbody tr:hover {
+  background-color: rgba(127, 29, 29, 0.20) !important;
+}
+
+/* Botones secundarios generados en formularios */
+.admin-theme button {
+  color-scheme: dark;
+}
+
+/* Scrollbar del admin */
+.admin-theme * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(220, 38, 38, 0.65) #050505;
+}
+
+.admin-theme ::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+.admin-theme ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ef4444, #7f1d1d);
+  border-radius: 999px;
+}
+
+/* Selección */
+.admin-theme ::selection {
+  background: rgba(220, 38, 38, 0.45);
+  color: #fff;
+}
+
