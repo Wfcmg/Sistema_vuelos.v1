@@ -11,7 +11,9 @@ import { registry } from './config/registry.js';
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import { buildContext, type ServiceUrls } from './graphql/context.js';
+import { idempotencyMiddleware } from './middleware/idempotency.js';
 
+const requireIdempotency = idempotencyMiddleware();
 const app  = express();
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -49,8 +51,8 @@ app.use(cors({
   },
   credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-correlation-id'],
-  exposedHeaders: ['X-Correlation-Id'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-correlation-id', 'X-Idempotency-Key'],
+  exposedHeaders: ['X-Correlation-Id', 'X-Idempotency-Key', 'X-Idempotency-Replayed', 'X-Idempotency-Cache-Id'],
   maxAge: 600,
 }));
 
@@ -192,7 +194,7 @@ app.get([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public',
       auth: 'none',
@@ -244,7 +246,7 @@ app.get([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public',
       auth: 'none',
@@ -297,7 +299,7 @@ app.get([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public',
       auth: 'none',
@@ -328,7 +330,7 @@ app.get([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public',
       auth: 'none',
@@ -410,7 +412,7 @@ app.get([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public',
       auth: 'none',
@@ -433,7 +435,7 @@ app.post([
   '/api/v1/William-Carrion-Booking/reservations',
   '/api/v1/William-Carrión-Booking/reservations',
   '/api/v1/william-carrion-booking/reservations'
-], express.json({ limit: '1mb' }), async (req, res) => {
+], express.json({ limit: '1mb' }), requireIdempotency, async (req, res) => {
   try {
     const result = await bookingForwardJson(
       `${services.booking}/api/v1/reservations`,
@@ -446,7 +448,7 @@ app.post([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public-contract',
       auth: 'none',
@@ -469,7 +471,7 @@ app.patch([
   '/api/v1/William-Carrion-Booking/reservations/:id/cancel',
   '/api/v1/William-Carrión-Booking/reservations/:id/cancel',
   '/api/v1/william-carrion-booking/reservations/:id/cancel'
-], express.json({ limit: '1mb' }), async (req, res) => {
+], express.json({ limit: '1mb' }), requireIdempotency, async (req, res) => {
   try {
     const id = encodeURIComponent(String(req.params.id));
 
@@ -484,7 +486,7 @@ app.patch([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public-contract',
       auth: 'none',
@@ -507,7 +509,7 @@ app.patch([
   '/api/v1/William-Carrion-Booking/reservations/:reservationId/passengers/:passengerId/seat',
   '/api/v1/William-Carrión-Booking/reservations/:reservationId/passengers/:passengerId/seat',
   '/api/v1/william-carrion-booking/reservations/:reservationId/passengers/:passengerId/seat'
-], express.json({ limit: '1mb' }), async (req, res) => {
+], express.json({ limit: '1mb' }), requireIdempotency, async (req, res) => {
   try {
     const reservationId = encodeURIComponent(String(req.params.reservationId));
     const passengerId = encodeURIComponent(String(req.params.passengerId));
@@ -523,7 +525,7 @@ app.patch([
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
-      version: 'v1',
+      version: 'v2',
       module: 'booking',
       visibility: 'public-contract',
       auth: 'none',
