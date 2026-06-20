@@ -28,8 +28,8 @@ x-contract:
     /api/v1/william-carrion-booking para no romper integraciones activas.
   architecturalPillars:
     idempotency: >
-      Las operaciones transaccionales declaran X-Idempotency-Key para evitar
-      reprocesos desde clientes integradores.
+      Las operaciones transaccionales aceptan X-Idempotency-Key de forma opcional para evitar
+      reprocesos desde clientes integradores. Si el cliente no lo envia, el Gateway genera un UUID interno.
     decoupledContract: >
       El contrato solicita identificadores minimos como flightClassId,
       reservationId y passengerId. No obliga al cliente a enviar datos
@@ -719,10 +719,11 @@ components:
     IdempotencyKeyHeader:
       name: X-Idempotency-Key
       in: header
-      required: true
+      required: false
       description: >
-        Clave unica para operaciones transaccionales. Debe ser un UUID generado
-        por el cliente. Evita duplicar reservas, cancelaciones o asignaciones.
+        Clave opcional para operaciones transaccionales. Si el cliente la envia,
+        el Gateway la usa para idempotencia. Si no la envia, el Gateway genera
+        un UUID internamente para mantener compatibilidad con clientes V1.
       schema:
         type: string
         format: uuid
@@ -1421,3 +1422,4 @@ components:
         - CONFIRMED
         - CANCELLED
       example: CONFIRMED
+

@@ -47,22 +47,10 @@ export function idempotencyMiddleware(): RequestHandler {
   return (req: Request, res: Response, next: NextFunction): void => {
     cleanExpiredEntries();
 
-    const rawKey = req.header('X-Idempotency-Key');
+    const providedKey = req.header('X-Idempotency-Key')?.trim();
+    const idempotencyKey = providedKey || randomUUID();
 
-    if (!rawKey) {
-      res.status(400).json({
-        success: false,
-        error: {
-          code: 'IDEMPOTENCY_KEY_REQUIRED',
-          message: 'La cabecera X-Idempotency-Key es obligatoria para esta operacion transaccional.',
-        },
-      });
-      return;
-    }
-
-    const idempotencyKey = rawKey.trim();
-
-    if (!isUuidLike(idempotencyKey)) {
+    if (providedKey && !isUuidLike(providedKey)) {
       res.status(400).json({
         success: false,
         error: {
