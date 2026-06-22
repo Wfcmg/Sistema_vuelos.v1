@@ -50,6 +50,9 @@ export function idempotencyMiddleware(): RequestHandler {
     const providedKey = req.header('X-Idempotency-Key')?.trim();
     const idempotencyKey = providedKey || randomUUID();
 
+    (req as any).idempotencyKey = idempotencyKey;
+    req.headers['x-idempotency-key'] = idempotencyKey;
+
     if (providedKey && !isUuidLike(providedKey)) {
       res.status(400).json({
         success: false,
@@ -116,3 +119,4 @@ export function idempotencyMiddleware(): RequestHandler {
     next();
   };
 }
+

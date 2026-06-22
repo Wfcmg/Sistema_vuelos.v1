@@ -361,10 +361,12 @@ async function bookingForwardJson(
   url: string,
   method: 'POST' | 'PATCH',
   body: unknown,
-  authorization?: string
+  authorization?: string,
+  extraHeaders: Record<string, string> = {}
 ) {
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    ...extraHeaders
   };
 
   if (authorization) {
@@ -396,6 +398,52 @@ async function bookingForwardJson(
   return responseBody;
 }
 
+function normalizeReservationForPublicContract(result: any) {
+  const reservation = result?.data?.reservation ?? result?.data ?? result?.reservation ?? result;
+
+  const id = String(
+    reservation?.id ??
+    reservation?.reservationId ??
+    reservation?.reservation_id ??
+    ''
+  ).trim();
+
+  if (!id) {
+    throw {
+      status: 502,
+      body: {
+        success: false,
+        error: {
+          code: 'BOOKING_RESERVATION_ID_MISSING',
+          message: 'La reserva fue creada, pero la respuesta interna no devolvio un id de reserva valido.',
+          details: result ?? null
+        }
+      }
+    };
+  }
+
+  const status = String(reservation?.status ?? 'CONFIRMED').trim() || 'CONFIRMED';
+
+  const rawReservationCode =
+    reservation?.reservationCode ??
+    reservation?.reservation_code ??
+    reservation?.code ??
+    undefined;
+
+  const reservationCode =
+    rawReservationCode === undefined || rawReservationCode === null
+      ? undefined
+      : String(rawReservationCode);
+
+  return {
+    reservation,
+    publicBody: {
+      id,
+      status,
+      ...(reservationCode ? { reservationCode } : {})
+    }
+  };
+}
 app.get([
   '/api/v1/William-Carrion-Booking/flight-classes/:flightClassId/occupied-seats',
   '/api/v1/William-Carrión-Booking/flight-classes/:flightClassId/occupied-seats',
@@ -437,14 +485,50 @@ app.post([
   '/api/v1/william-carrion-booking/reservations'
 ], express.json({ limit: '1mb' }), requireIdempotency, async (req, res) => {
   try {
+    const idempotencyKey = String(
+      req.headers['x-idempotency-key'] ??
+      res.getHeader('X-Idempotency-Key') ??
+      ''
+    ).trim();
+
+    const correlationId = String(
+      req.headers['x-correlation-id'] ??
+      res.getHeader('X-Correlation-Id') ??
+      ''
+    ).trim();
+
+    console.log(JSON.stringify({
+      ts: new Date().toISOString(),
+      component: 'api-gateway',
+      route: 'POST /api/v1/william-carrion-booking/reservations',
+      hasIdempotencyKey: Boolean(idempotencyKey),
+      idempotencyKey: idempotencyKey || null,
+      correlationId: correlationId || null
+    }));
+
     const result = await bookingForwardJson(
       `${services.booking}/api/v1/reservations`,
       'POST',
       req.body,
-      req.headers.authorization
+      req.headers.authorization,
+      {
+        ...(idempotencyKey ? { 'X-Idempotency-Key': idempotencyKey } : {}),
+        ...(correlationId ? { 'X-Correlation-Id': correlationId } : {})
+      }
     );
 
+    const normalized = normalizeReservationForPublicContract(result);
+    const reservation = {
+      ...normalized.reservation,
+      id: normalized.publicBody.id,
+      status: normalized.publicBody.status,
+      ...(normalized.publicBody.reservationCode
+        ? { reservationCode: normalized.publicBody.reservationCode }
+        : {})
+    };
+
     res.status(201).json({
+      ...normalized.publicBody,
       success: true,
       owner: 'William Carrion',
       api: 'William Carrion Booking API',
@@ -453,7 +537,7 @@ app.post([
       visibility: 'public-contract',
       auth: 'none',
       feature: 'create-reservation',
-      data: result.data ?? result
+      data: reservation
     });
   } catch (err: any) {
     res.status(err.status ?? 502).json({
@@ -466,7 +550,6 @@ app.post([
     });
   }
 });
-
 app.patch([
   '/api/v1/William-Carrion-Booking/reservations/:id/cancel',
   '/api/v1/William-Carrión-Booking/reservations/:id/cancel',
@@ -566,6 +649,7 @@ app.listen(PORT, () => {
   }
   console.log('');
 });
+
 
 
 
