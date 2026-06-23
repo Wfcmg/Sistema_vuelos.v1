@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal, OnInit } from '@angular/core';
+﻿import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
@@ -262,6 +262,13 @@ type TicketPassenger = {
                 <p class="text-sm text-slate-400 mt-1">
                   Los asientos rojos ya están ocupados. Antes de pagar se vuelve a validar con el backend.
                 </p>
+                <div class="mt-3 flex items-center gap-2 rounded-xl border border-green-400/40 bg-green-950/40 px-3 py-2 text-xs font-bold text-green-200">
+                  <span class="h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
+                  <span>
+                    Asientos en vivo cada 3 segundos
+                    <ng-container *ngIf="lastSeatsSyncAt()"> · último sync {{ lastSeatsSyncAt() }}</ng-container>
+                  </span>
+                </div>
               </div>
               <button type="button" (click)="reloadSeats()"
                 class="px-4 py-2 rounded-xl bg-[#050816] border border-white/10 text-xs font-bold text-amber-500 hover:bg-[#111827]">
@@ -503,7 +510,7 @@ type TicketPassenger = {
     </div>
   `,
 })
-export class ReservationComponent implements OnInit {
+export class ReservationComponent implements OnInit, OnDestroy {
   private route      = inject(ActivatedRoute);
   router             = inject(Router);
   private fb         = inject(FormBuilder);
@@ -521,7 +528,10 @@ export class ReservationComponent implements OnInit {
   promoResult    = signal<PromotionValidation | null>(null);
   occupiedSeats  = signal<Set<string>>(new Set());
   occupiedSeatsLoading = signal(false);
+  occupiedSeatsLive = signal(false);
+  lastSeatsSyncAt = signal('');
   activePassengerIndex = signal(0);
+  private seatPollingId: ReturnType<typeof setInterval> | null = null;
 
   successData = signal<{
     reservationId: string;
@@ -578,6 +588,10 @@ export class ReservationComponent implements OnInit {
     this.loadOccupiedSeats();
   }
 
+  ngOnDestroy() {
+    this.stopSeatPolling();
+  }
+
   money(value: unknown) {
     return `$${Number(value ?? 0).toFixed(2)}`;
   }
@@ -620,9 +634,11 @@ export class ReservationComponent implements OnInit {
   goBack() {
     if (this.step() === 3) {
       this.step.set(2);
+      this.startSeatPolling();
       return;
     }
     if (this.step() === 2) {
+      this.stopSeatPolling();
       this.step.set(1);
       return;
     }
@@ -639,6 +655,7 @@ export class ReservationComponent implements OnInit {
     this.activePassengerIndex.set(0);
     this.loadOccupiedSeats();
     this.step.set(2);
+    this.startSeatPolling();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -665,6 +682,7 @@ export class ReservationComponent implements OnInit {
       return;
     }
 
+    this.stopSeatPolling();
     this.step.set(3);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -705,26 +723,85 @@ export class ReservationComponent implements OnInit {
     this.payForm.get('expiry')!.setValue(v);
   }
 
-  loadOccupiedSeats() {
+  loadOccupiedSeats(silent = false) {
     if (!this.flightClassId) return;
 
-    this.occupiedSeatsLoading.set(true);
+    if (!silent) {
+      this.occupiedSeatsLoading.set(true);
+    }
 
     this.resSvc.occupiedSeats(this.flightClassId).subscribe({
       next: res => {
-        const seats = (res.data ?? []).map(seat => String(seat).toUpperCase());
-        this.occupiedSeats.set(new Set(seats));
-        this.occupiedSeatsLoading.set(false);
+        const seats = (res.data ?? [])
+          .map(seat => String(seat).trim().toUpperCase())
+          .filter(Boolean);
+
+        const occupiedNow = new Set(seats);
+
+        this.occupiedSeats.set(occupiedNow);
+        this.lastSeatsSyncAt.set(new Date().toLocaleTimeString('es-EC', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        }));
+        this.clearSeatsThatBecameOccupied(occupiedNow);
+
+        if (!silent) {
+          this.occupiedSeatsLoading.set(false);
+        }
       },
       error: () => {
-        this.occupiedSeats.set(new Set());
-        this.occupiedSeatsLoading.set(false);
+        if (!silent) {
+          this.occupiedSeats.set(new Set());
+          this.occupiedSeatsLoading.set(false);
+        }
       },
     });
   }
 
   reloadSeats() {
-    this.loadOccupiedSeats();
+    this.loadOccupiedSeats(false);
+  }
+
+  private startSeatPolling() {
+    this.stopSeatPolling();
+    this.occupiedSeatsLive.set(true);
+
+    this.seatPollingId = setInterval(() => {
+      if (this.step() === 2 && !this.successData()) {
+        this.loadOccupiedSeats(true);
+      }
+    }, 3000);
+  }
+
+  private stopSeatPolling() {
+    if (this.seatPollingId) {
+      clearInterval(this.seatPollingId);
+      this.seatPollingId = null;
+    }
+
+    this.occupiedSeatsLive.set(false);
+  }
+
+  private clearSeatsThatBecameOccupied(occupiedNow: Set<string>) {
+    let removedSeats: string[] = [];
+
+    this.passengerArray.controls.forEach((control) => {
+      const current = String(control.get('seatNumber')?.value ?? '').trim().toUpperCase();
+
+      if (current && occupiedNow.has(current)) {
+        control.get('seatNumber')?.setValue('');
+        removedSeats.push(current);
+      }
+    });
+
+    removedSeats = Array.from(new Set(removedSeats));
+
+    if (removedSeats.length > 0) {
+      this.errorMsg.set(
+        `El asiento ${removedSeats.join(', ')} acaba de ocuparse por otra reserva. Elige otro asiento.`
+      );
+    }
   }
 
   passengerName(i: number) {

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -19,12 +19,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Seats'>;
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 const ROWS = Array.from({ length: 20 }, (_, i) => i + 1);
+const POLLING_MS = 3000;
 
 export default function SeatSelectionScreen({ route, navigation }: Props) {
   const { flight, selectedClass, passenger } = route.params;
   const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
   const [selectedSeat, setSelectedSeat] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lastSyncAt, setLastSyncAt] = useState('');
+  const selectedSeatRef = useRef('');
+  const warnedSeatRef = useRef('');
 
   const flightClassId =
     selectedClass.flightClassId ??
@@ -33,26 +37,70 @@ export default function SeatSelectionScreen({ route, navigation }: Props) {
     '';
 
   useEffect(() => {
-    loadOccupiedSeats();
-  }, []);
+    selectedSeatRef.current = selectedSeat;
+  }, [selectedSeat]);
+
+  const loadOccupiedSeats = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) {
+          setLoading(true);
+        }
+
+        if (!flightClassId) return;
+
+        const data = await getOccupiedSeats(String(flightClassId));
+        const normalized = Array.from(
+          new Set(data.map((seat) => String(seat).trim().toUpperCase()).filter(Boolean))
+        );
+
+        setOccupiedSeats(normalized);
+        setLastSyncAt(new Date().toLocaleTimeString('es-EC', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        }));
+
+        const currentSelected = selectedSeatRef.current;
+
+        if (currentSelected && normalized.includes(currentSelected)) {
+          setSelectedSeat('');
+
+          if (warnedSeatRef.current !== currentSelected) {
+            warnedSeatRef.current = currentSelected;
+            Alert.alert(
+              'Asiento ocupado',
+              `El asiento ${currentSelected} acaba de ser reservado por otra persona. Elige otro asiento.`
+            );
+          }
+        }
+      } catch {
+        if (!silent) {
+          setOccupiedSeats([]);
+        }
+      } finally {
+        if (!silent) {
+          setLoading(false);
+        }
+      }
+    },
+    [flightClassId]
+  );
+
+  useEffect(() => {
+    loadOccupiedSeats(false);
+
+    const timer = setInterval(() => {
+      loadOccupiedSeats(true);
+    }, POLLING_MS);
+
+    return () => clearInterval(timer);
+  }, [loadOccupiedSeats]);
 
   const availableSeats = useMemo(() => {
     const all = ROWS.flatMap((row) => LETTERS.map((letter) => `${row}${letter}`));
     return all.filter((seat) => !occupiedSeats.includes(seat));
   }, [occupiedSeats]);
-
-  async function loadOccupiedSeats() {
-    try {
-      setLoading(true);
-      if (!flightClassId) return;
-      const data = await getOccupiedSeats(String(flightClassId));
-      setOccupiedSeats(data);
-    } catch {
-      setOccupiedSeats([]);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   function autoAssign() {
     const seat = availableSeats[0];
@@ -68,12 +116,25 @@ export default function SeatSelectionScreen({ route, navigation }: Props) {
       Alert.alert('Asiento ocupado', `El asiento ${seat} ya está ocupado.`);
       return;
     }
+
+    warnedSeatRef.current = '';
     setSelectedSeat(seat);
   }
 
-  function continuePayment() {
+  async function continuePayment() {
     if (!selectedSeat) {
       Alert.alert('Selecciona asiento', 'Debes elegir un asiento para continuar.');
+      return;
+    }
+
+    await loadOccupiedSeats(true);
+
+    if (occupiedSeats.includes(selectedSeat)) {
+      Alert.alert(
+        'Asiento ocupado',
+        `El asiento ${selectedSeat} ya fue reservado por otra persona. Elige otro asiento.`
+      );
+      setSelectedSeat('');
       return;
     }
 
@@ -105,6 +166,14 @@ export default function SeatSelectionScreen({ route, navigation }: Props) {
         <Text style={styles.title}>Selección de asientos</Text>
         <Text style={styles.muted}>Elige un asiento disponible para cada pasajero.</Text>
 
+        <View style={styles.liveBox}>
+          <Text style={styles.liveDot}>●</Text>
+          <Text style={styles.liveText}>
+            Asientos en vivo: se actualizan cada 3 segundos
+            {lastSyncAt ? ` · último sync ${lastSyncAt}` : ''}
+          </Text>
+        </View>
+
         <View style={styles.card}>
           <View style={styles.cardTop}>
             <View>
@@ -112,7 +181,7 @@ export default function SeatSelectionScreen({ route, navigation }: Props) {
               <Text style={styles.muted}>Los asientos rojos ya están ocupados.</Text>
             </View>
 
-            <Pressable style={styles.refresh} onPress={loadOccupiedSeats}>
+            <Pressable style={styles.refresh} onPress={() => loadOccupiedSeats(false)}>
               <Text style={styles.refreshText}>Refrescar</Text>
             </Pressable>
           </View>
@@ -216,6 +285,18 @@ const styles = StyleSheet.create({
   step: { color: colors.muted, fontWeight: '900' },
   title: { color: colors.white, fontSize: 30, fontWeight: '900' },
   muted: { color: colors.muted, fontSize: 15, lineHeight: 23 },
+  liveBox: {
+    backgroundColor: '#052e16',
+    borderWidth: 1,
+    borderColor: '#22c55e',
+    borderRadius: radius.md,
+    padding: 12,
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
+  liveDot: { color: '#22c55e', fontWeight: '900' },
+  liveText: { color: '#bbf7d0', fontWeight: '800', flex: 1 },
   card: {
     backgroundColor: colors.card,
     borderWidth: 1,
